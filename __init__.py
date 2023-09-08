@@ -10,7 +10,7 @@ from .operators.ImportMeshOperator import ImportMeshOperator
 from .operators.ImportObjectOperator import ImportObjectOperator
 from .operators.ImportSkeletonOperator import ImportSkeletonOperator
 from .operators.ImportSimplifiedSkeletonOperator import ImportSimplifiedSkeletonOperator
-from .operators.DebugOperator import DebugOperator
+# from .operators.DebugOperator import DebugOperator
 
 from .extensions import BoneProperties
 
@@ -29,7 +29,7 @@ bl_info = {
 
 def register():
     BoneProperties.load()
-    DebugOperator.load()
+    # DebugOperator.load()
     ImportMeshOperator.load()
     ImportObjectOperator.load()
     ImportSkeletonOperator.load()
