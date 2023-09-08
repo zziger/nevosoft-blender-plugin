@@ -1,7 +1,7 @@
 # Nevosoft Blender plugin
 
-|[**Download / Скачать**](https://github.com/zziger/nevosoft-blender-plugin/archive/refs/heads/master.zip)|
-|-|
+| [**Download / Скачать**](https://github.com/zziger/nevosoft-blender-plugin/archive/refs/heads/master.zip) | [**Discord сервер**](https://discord.supercow.community) 
+|---|---|
 
 ## Установка
 
