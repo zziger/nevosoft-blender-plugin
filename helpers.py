@@ -15,3 +15,12 @@ class OperatorBase:
 
 class ErrorException(Exception):
     pass
+
+
+def getBoneTag(bone):
+    if bone['tag'] == None:
+        return -1
+    return bone['tag']
+
+def findBoneByTag(bones, tag: int):
+    return next(filter(lambda e: getBoneTag(e) == tag, bones), None)

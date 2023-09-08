@@ -1,3 +1,4 @@
+from pathlib import Path
 import traceback
 
 import bpy
@@ -5,25 +6,27 @@ import bpy_extras
 
 from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
+from ..structures.SklFile import SklFile
+from ..structures.AnmFile import AnmFile
 
 
-class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
-    bl_idname = "nevosoft.import_mesh"
-    bl_label = "Nevosoft mesh (.msh)"
+class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    bl_idname = "nevosoft.import_animation"
+    bl_label = "Nevosoft animation (.anm)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
 
     filter_glob: bpy.props.StringProperty(
-        default='*.msh',
+        default='*.anm',
         options={'HIDDEN'}
     )
 
     def execute(self, context):
         try:
-            skl = MshFile.read(self.filepath)
-            skl.create()
-            self.message("Mesh imported successfully")
+            anm = AnmFile.read(self.filepath)
+            anm.create(bpy.context.active_object)
+            self.message("Animation imported successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
@@ -31,14 +34,14 @@ class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.I
 
     @staticmethod
     def load():
-        bpy.utils.register_class(ImportMeshOperator)
+        bpy.utils.register_class(ImportAnimationOperator)
         bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
     @staticmethod
     def unload():
-        bpy.utils.unregister_class(ImportMeshOperator)
+        bpy.utils.unregister_class(ImportAnimationOperator)
         bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportMeshOperator.bl_idname, text=ImportMeshOperator.bl_label)
+    self.layout.operator(ImportAnimationOperator.bl_idname, text=ImportAnimationOperator.bl_label)
