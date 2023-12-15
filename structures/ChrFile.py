@@ -13,17 +13,21 @@ class ChrFile:
     model: str = ""
     texture: str = ""
 
-    def create(self, directory: str):
+    def create(self, directory: str, load_at_0z: bool):
         # TODO: error handling
         image = bpy.data.images.load(path.join(directory, self.texture))
         skl = SklFile.read(path.join(directory, self.model))
+        if load_at_0z:
+            skl.moveTo0z()
         return skl.create(Path(self.model).stem, (0, 0, 0), image)
 
-    def createSimplified(self, anm, directory: str):
+    def createSimplified(self, anm, directory: str, load_at_0z: bool):
         # TODO: error handling
         image = bpy.data.images.load(path.join(directory, self.texture))
         skl = SklFile.read(path.join(directory, self.model))
         skl.simplify(anm)
+        if load_at_0z:
+            skl.moveTo0z()
         return skl.create(Path(self.model).stem, (0, 0, 0), image)
 
     def __init__(self, model: str, texture: str) -> None:

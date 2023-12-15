@@ -258,6 +258,9 @@ class SklFile:
                 SklLink(1, indx, (linkedVert.xyz - bone.pos) @ bone.mat.to_4x4())
             ]
 
+    def moveTo0z(self):
+        self.bones[0].pos = Vector((0, 0, 0))
+
     def create(self, name: str, off: Vector, image=None) -> bpy.types.Object:
         # self.animBones = [None] * len(self.bones)
         # self.anim = anim
@@ -390,7 +393,6 @@ class SklFile:
         tcs = [item for uvs in data.uvFaces for item in (uvs.uv0, uvs.uv1, uvs.uv2)]
 
         for i in range(indxCount):
-            print(tcs[i].x)
             key = SklBufVertex(indxs[i], tcs[i].x, tcs[i].y)
             if not key in vertMap:
                 vertMap[key] = []
@@ -460,8 +462,6 @@ class SklFile:
         deform = bm.verts.layers.deform.active
         
         
-        print(len(data.vertLinks))
-        print(len(bm.verts))
         data.vertLinks = [None] * len(bm.verts)
         for index, vertex in enumerate(bm.verts):
 

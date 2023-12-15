@@ -24,16 +24,22 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
         options={'HIDDEN'}
     )
 
+    load_at_0z: bpy.props.BoolProperty(
+        name="Load at height 0",
+        description="Move character's root bone to height 0",
+        default=False,
+    )
+
     def execute(self, context):
         try:
             chr = ChrFile.read(self.filepath)
             directory = str(Path(self.filepath).parent)
 
             if chr.isComplex(directory):
-                bpy.ops.nevosoft.import_simplified_character('INVOKE_DEFAULT', chr_filepath=self.filepath)
+                bpy.ops.nevosoft.import_simplified_character('INVOKE_DEFAULT', chr_filepath=self.filepath, load_at_0z=self.load_at_0z)
                 return {'FINISHED'}
-
-            chr.create(directory)
+            
+            chr.create(directory, self.load_at_0z)
             self.message("Character was imported successfully")
         except Exception as e:
             self.error(str(e))

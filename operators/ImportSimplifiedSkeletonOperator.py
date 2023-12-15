@@ -22,6 +22,12 @@ class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_ext
         options={'HIDDEN'}
     )
 
+    load_at_0z: bpy.props.BoolProperty(
+        name="Load at height 0",
+        description="Move character's root bone to height 0",
+        default=False,
+    )
+
     skl_filepath: bpy.props.StringProperty(default="")
     apply_anim: bpy.props.BoolProperty(name="Apply animation", description="Apply selected animation after import", default=False)
     confirmed: bpy.props.BoolProperty(default=False)
@@ -49,13 +55,15 @@ class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_ext
 
     def execute(self, context):
         if not self.confirmed:
-            bpy.ops.nevosoft.import_simplified_skeleton('INVOKE_DEFAULT', confirmed=True, skl_filepath=self.skl_filepath)
+            bpy.ops.nevosoft.import_simplified_skeleton('INVOKE_DEFAULT', confirmed=True, skl_filepath=self.skl_filepath, load_at_0z=self.load_at_0z)
             return {'FINISHED'}
         
         try:
             anm = AnmFile.read(self.filepath)
             skl = SklFile.read(self.skl_filepath)
             skl.simplify(anm)
+            if self.load_at_0z:
+                skl.moveTo0z()
             obj = skl.create(Path(self.skl_filepath).stem, (0, 0, 0), None)
             if self.apply_anim:
                 anm.create(obj.parent)

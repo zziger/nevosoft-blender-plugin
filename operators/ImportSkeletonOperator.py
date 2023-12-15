@@ -22,13 +22,22 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
         options={'HIDDEN'}
     )
 
+    load_at_0z: bpy.props.BoolProperty(
+        name="Load at height 0",
+        description="Move skeleton's root bone to height 0",
+        default=False,
+    )
+
     def execute(self, context):
         try:
             skl = SklFile.read(self.filepath)
 
             if skl.isComplex():
-                bpy.ops.nevosoft.import_simplified_skeleton('INVOKE_DEFAULT', skl_filepath=self.filepath)
+                bpy.ops.nevosoft.import_simplified_skeleton('INVOKE_DEFAULT', skl_filepath=self.filepath, load_at_0z=self.load_at_0z)
                 return {'FINISHED'}
+                
+            if self.load_at_0z:
+                skl.moveTo0z()
                 
             skl.create(Path(self.filepath).stem, (0, 0, 0), None)
             self.message("Skeleton was imported successfully")

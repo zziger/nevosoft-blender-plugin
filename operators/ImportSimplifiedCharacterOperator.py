@@ -24,6 +24,12 @@ class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_ex
         options={'HIDDEN'}
     )
 
+    load_at_0z: bpy.props.BoolProperty(
+        name="Load at height 0",
+        description="Move character's root bone to height 0",
+        default=False,
+    )
+
     chr_filepath: bpy.props.StringProperty(default="")
     confirmed: bpy.props.BoolProperty(default=False)
     apply_anim: bpy.props.BoolProperty(name="Apply animation", description="Apply selected animation after import", default=False)
@@ -51,14 +57,14 @@ class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_ex
 
     def execute(self, context):
         if not self.confirmed:
-            bpy.ops.nevosoft.import_simplified_character('INVOKE_DEFAULT', confirmed=True, chr_filepath=self.chr_filepath)
+            bpy.ops.nevosoft.import_simplified_character('INVOKE_DEFAULT', confirmed=True, chr_filepath=self.chr_filepath, load_at_0z=self.load_at_0z)
             return {'FINISHED'}
         
         try:
             chr = ChrFile.read(self.chr_filepath)
             anm = AnmFile.read(self.filepath)
             directory = str(Path(self.chr_filepath).parent)
-            obj = chr.createSimplified(anm, directory)
+            obj = chr.createSimplified(anm, directory, self.load_at_0z)
             if self.apply_anim:
                 anm.create(obj.parent)
             self.message("Character was simplified and imported successfully")
