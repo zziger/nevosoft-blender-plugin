@@ -18,14 +18,15 @@ from .logger import logger
 from .extensions import BoneProperties, ModelTools
 
 bl_info = {
-    "name": "Nevosoft",
+    "name": "Nevosoft Model Formats (.cgo, .msh, .skl, .chr, .anm)",
+    "description": "Import/export model and animation formats used in Nevosoft games",
     "author": "zziger, Creepobot",
     "version": (0, 1),
     "blender": (3, 6, 2),
-    "description": "",
     "warning": "",
-    "location": "File -> Import/Export -> Nevosoft ...",
-    "doc_url": "",
+    "location": "File > Import/Export > Nevosoft ...",
+    "doc_url": "https://github.com/zziger/nevosoft-blender-plugin",
+    "tracker_url": "https://github.com/zziger/nevosoft-blender-plugin/issues/new",
     "category": "Import-Export",
 }
 
