@@ -11,8 +11,11 @@ from ..structures.AnmFile import AnmFile
 
 
 class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Simplify and import Nevosoft Skeleton file into current scene.
+Simplification process requires a valid animation file to be selected"""
+
     bl_idname = "nevosoft.import_simplified_skeleton"
-    bl_label = "Simplify Nevosoft Skeleton (.skl)"
+    bl_label = "Simplify Skeleton"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True

@@ -11,6 +11,8 @@ from ..structures.AnmFile import AnmFile
 
 
 class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Import Nevosoft Skeleton file into current scene"""
+
     bl_idname = "nevosoft.import_skeleton"
     bl_label = "Nevosoft Skeleton (.skl)"
     bl_action = "import"

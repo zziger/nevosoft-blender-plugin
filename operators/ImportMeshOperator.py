@@ -8,6 +8,8 @@ from ..structures.MshFile import MshFile
 
 
 class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Import Nevosoft Mesh file into current scene"""
+
     bl_idname = "nevosoft.import_mesh"
     bl_label = "Nevosoft Mesh (.msh)"
     bl_action = "import"

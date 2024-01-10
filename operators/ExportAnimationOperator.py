@@ -9,6 +9,9 @@ from ..structures.AnmFile import AnmFile
 
 
 class ExportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+    """Export Nevosoft Animation file from selected armature.
+Armature must have one mesh child, animation data includes bone rotations and armature object location"""
+
     bl_idname = "nevosoft.export_animation"
     bl_label = "Nevosoft Animation (.anm)"
     bl_action = "export"

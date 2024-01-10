@@ -11,6 +11,8 @@ from ..structures.CgoFile import CgoFile
 # TODO: allow to export selected meshes instead of the whole scene
 
 class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+    """Export Nevosoft Object file from current scene"""
+
     bl_idname = "nevosoft.export_object"
     bl_label = "Nevosoft Object (.cgo)"
     bl_action = "export"

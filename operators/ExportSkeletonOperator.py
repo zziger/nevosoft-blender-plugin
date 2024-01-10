@@ -8,6 +8,9 @@ from ..structures.SklFile import SklFile
 
 
 class ExportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+    """Export Nevosoft Skeleton file from selected armature.
+Armature must have one mesh child. Output skeleton includes only model and armature data (no textures, use .chr to include them)"""
+    
     bl_idname = "nevosoft.export_skeleton"
     bl_label = "Nevosoft Skeleton (.skl)"
     bl_action = "export"

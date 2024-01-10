@@ -8,6 +8,8 @@ from ..structures.MshFile import MshFile
 
 
 class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+    """Export Nevosoft Mesh file from selected mesh"""
+    
     bl_idname = "nevosoft.export_mesh"
     bl_label = "Nevosoft Mesh (.msh)"
     bl_action = "export"

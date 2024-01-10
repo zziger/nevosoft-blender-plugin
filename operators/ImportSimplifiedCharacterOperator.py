@@ -13,8 +13,11 @@ from ..structures.AnmFile import AnmFile
 
 
 class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Simplify and import Nevosoft Character file into current scene.
+Simplification process requires a valid animation file to be selected"""
+
     bl_idname = "nevosoft.import_simplified_character"
-    bl_label = "Simplify Nevosoft Character (.chr)"
+    bl_label = "Simplify Character"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True

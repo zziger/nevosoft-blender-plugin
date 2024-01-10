@@ -11,6 +11,9 @@ from ..structures.ChrFile import ChrFile
 
 
 class ExportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+    """Export Nevosoft Character and Skeleton file from selected armature.
+Armature must have one mesh child. Output character includes model, armature and texture data"""
+
     bl_idname = "nevosoft.export_character"
     bl_label = "Nevosoft Character (.chr)"
     bl_action = "export"

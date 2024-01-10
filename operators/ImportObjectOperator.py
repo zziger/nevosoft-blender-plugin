@@ -11,6 +11,8 @@ from ..utils import clear_scene
 
 
 class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Import Nevosoft Object file into current scene"""
+
     bl_idname = "nevosoft.import_object"
     bl_label = "Nevosoft Object (.cgo)"
     bl_action = "import"

@@ -12,6 +12,8 @@ from ..structures.AnmFile import AnmFile
 
 
 class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Import Nevosoft Character file into current scene"""
+    
     bl_idname = "nevosoft.import_character"
     bl_label = "Nevosoft Character (.chr)"
     bl_action = "import"

@@ -11,6 +11,9 @@ from ..structures.AnmFile import AnmFile
 from .ExportSkeletonOperator import ExportSkeletonOperator
 
 class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+    """Import Nevosoft Animation file onto selected armature.
+Armature must have one mesh child"""
+
     bl_idname = "nevosoft.import_animation"
     bl_label = "Nevosoft Animation (.anm)"
     bl_action = "import"
