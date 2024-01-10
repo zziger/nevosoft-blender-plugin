@@ -10,10 +10,12 @@ from .operators.ImportMeshOperator import ImportMeshOperator
 from .operators.ImportObjectOperator import ImportObjectOperator
 from .operators.ImportSkeletonOperator import ImportSkeletonOperator
 from .operators.ImportSimplifiedSkeletonOperator import ImportSimplifiedSkeletonOperator
+from .operators.RetargetAnimationsOperator import RetargetAnimationsOperator
+from .operators.RetargetModelOperator import RetargetModelOperator
 from .settings import PluginPreferences
 from .logger import logger
 
-from .extensions import BoneProperties
+from .extensions import BoneProperties, ModelTools
 
 bl_info = {
     "name": "Nevosoft",
@@ -30,22 +32,30 @@ bl_info = {
 
 def register():
     logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, bl_info["version"])))
-    
+
     PluginPreferences.load()
     BoneProperties.load()
-    # DebugOperator.load()
-    ImportMeshOperator.load()
+    ModelTools.load()
+
+    # Import
     ImportObjectOperator.load()
-    ImportSkeletonOperator.load()
-    ImportSimplifiedSkeletonOperator.load()
-    ImportAnimationOperator.load()
-    ExportAnimationOperator.load()
+    ImportMeshOperator.load()
     ImportCharacterOperator.load()
+    ImportSkeletonOperator.load()
+    ImportAnimationOperator.load()
     ImportSimplifiedCharacterOperator.load()
-    ExportMeshOperator.load()
+    ImportSimplifiedSkeletonOperator.load()
+
+    # Export
     ExportObjectOperator.load()
-    ExportSkeletonOperator.load()
+    ExportMeshOperator.load()
     ExportCharacterOperator.load()
+    ExportSkeletonOperator.load()
+    ExportAnimationOperator.load()
+
+    # Tools
+    RetargetAnimationsOperator.load()
+    RetargetModelOperator.load()
 
 def unregister():
     pass
