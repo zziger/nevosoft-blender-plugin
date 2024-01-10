@@ -50,4 +50,8 @@ ru_lang = {
     ('*', 'All animations that were not retargeted will not match this model anymore'): 'Все анимации, которые не были переконвертированы, больше не будут соответствовать этой модели',
     ('*', 'Failed to find armature mesh'): 'Не удалось найти меш арматурного объекта',
     ('*', 'Replace model rest pose:'): 'Заменить базовую позу модели:',
+    ('*', 'Nevosoft Model Formats (.cgo, .msh, .skl, .chr, .anm)'): 'Форматы моделей Nevosoft (.cgo, .msh, .skl, .chr, .anm)',
+    ('*', 'Import/export model and animation formats used in Nevosoft games'): 'Импорт/экспорт форматов моделей и анимаций, используемых в играх Nevosoft',
+    ('*', 'File > Import/Export > Nevosoft ...'): 'Файл > Импортировать/Экспортировать > ... Nevosoft',
+    ('*', 'Debug mode'): 'Режим отладки',
 }
