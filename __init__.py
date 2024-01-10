@@ -10,24 +10,28 @@ from .operators.ImportMeshOperator import ImportMeshOperator
 from .operators.ImportObjectOperator import ImportObjectOperator
 from .operators.ImportSkeletonOperator import ImportSkeletonOperator
 from .operators.ImportSimplifiedSkeletonOperator import ImportSimplifiedSkeletonOperator
-# from .operators.DebugOperator import DebugOperator
+from .settings import PluginPreferences
+from .logger import logger
 
 from .extensions import BoneProperties
 
 bl_info = {
     "name": "Nevosoft",
-    "author": "Creepobot, zziger",
+    "author": "zziger, Creepobot",
     "version": (0, 1),
-    "blender": (3, 0, 1),
+    "blender": (3, 6, 2),
     "description": "",
     "warning": "",
-    "location": "",
+    "location": "File -> Import/Export -> Nevosoft ...",
     "doc_url": "",
     "category": "Import-Export",
 }
 
 
 def register():
+    logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, bl_info["version"])))
+    
+    PluginPreferences.load()
     BoneProperties.load()
     # DebugOperator.load()
     ImportMeshOperator.load()
@@ -42,3 +46,6 @@ def register():
     ExportObjectOperator.load()
     ExportSkeletonOperator.load()
     ExportCharacterOperator.load()
+
+def unregister():
+    pass
