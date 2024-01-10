@@ -5,6 +5,7 @@ import bpy_extras
 
 from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
+from ..logger import operator_logger
 
 
 class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
@@ -31,15 +32,16 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
         return ExportMeshOperator.find_mesh() is not None
     
     def execute(self, context):
-        try:
-            obj = ExportMeshOperator.find_mesh()
-            if obj is None:
-                raise Exception("Failed to find a mesh to export. Select a mesh in your 3D viewport")
+        with operator_logger(self):
+            try:
+                obj = ExportMeshOperator.find_mesh()
+                if obj is None:
+                    raise Exception("Failed to find a mesh to export. Select a mesh in your 3D viewport")
 
-            MshFile.write(obj, self.filepath)
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
+                MshFile.write(obj, self.filepath)
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
 
         return {'FINISHED'}
 

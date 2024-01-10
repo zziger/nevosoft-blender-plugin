@@ -8,6 +8,7 @@ from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
+from ..logger import operator_logger
 
 
 class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
@@ -66,19 +67,20 @@ Simplification process requires a valid animation file to be selected"""
             bpy.ops.nevosoft.import_simplified_skeleton('INVOKE_DEFAULT', confirmed=True, skl_filepath=self.skl_filepath, load_at_0z=self.load_at_0z)
             return {'FINISHED'}
         
-        try:
-            anm = AnmFile.read(self.filepath)
-            skl = SklFile.read(self.skl_filepath)
-            skl.simplify(anm)
-            if self.load_at_0z:
-                skl.moveTo0z()
-            obj = skl.create(Path(self.skl_filepath).stem, (0, 0, 0), None)
-            if self.apply_anim:
-                anm.create(obj.parent)
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
-        return {'FINISHED'}
+        with operator_logger(self):
+            try:
+                anm = AnmFile.read(self.filepath)
+                skl = SklFile.read(self.skl_filepath)
+                skl.simplify(anm)
+                if self.load_at_0z:
+                    skl.moveTo0z()
+                obj = skl.create(Path(self.skl_filepath).stem, (0, 0, 0), None)
+                if self.apply_anim:
+                    anm.create(obj.parent)
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
+            return {'FINISHED'}
 
     @staticmethod
     def load():

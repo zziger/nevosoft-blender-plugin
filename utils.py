@@ -2,8 +2,8 @@ import bpy
 
 
 def clear_scene():
-    if bpy.context.active_object and bpy.context.active_object.mode == "EDIT":
-        bpy.ops.object.editmode_toggle()
+    if bpy.context.active_object is not None:
+        bpy.ops.object.mode_set(mode='OBJECT')
 
     for obj in bpy.data.objects:
         obj.hide_set(False)
@@ -28,3 +28,9 @@ def clear_scene():
     bpy.ops.outliner.orphans_purge(
         do_local_ids=True, do_linked_ids=True, do_recursive=True
     )
+
+def find_last(lst, predicate):
+    for item in reversed(lst):
+        if predicate(item):
+            return item
+    return None

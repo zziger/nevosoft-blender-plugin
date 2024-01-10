@@ -8,6 +8,7 @@ from bpy.types import Panel
 from ..helpers import OperatorBase
 from ..structures.CgoFile import CgoFile
 from ..utils import clear_scene
+from ..logger import operator_logger
 
 
 class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
@@ -31,15 +32,16 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     )
 
     def execute(self, context):
-        try:
-            if self.clear_scene:
-                clear_scene()
-            cgo = CgoFile.read(self.filepath)
-            cgo.create()
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
-        return {'FINISHED'}
+        with operator_logger(self):
+            try:
+                if self.clear_scene:
+                    clear_scene()
+                cgo = CgoFile.read(self.filepath)
+                cgo.create()
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
+            return {'FINISHED'}
 
     def draw(self, context):
         pass

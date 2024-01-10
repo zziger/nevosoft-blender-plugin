@@ -5,6 +5,7 @@ import bpy_extras
 
 from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
+from ..logger import operator_logger
 
 
 class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
@@ -22,14 +23,15 @@ class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.I
     )
 
     def execute(self, context):
-        try:
-            skl = MshFile.read(self.filepath)
-            skl.create()
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
+        with operator_logger(self):
+            try:
+                skl = MshFile.read(self.filepath)
+                skl.create()
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
 
-        return {'FINISHED'}
+            return {'FINISHED'}
 
     @staticmethod
     def load():

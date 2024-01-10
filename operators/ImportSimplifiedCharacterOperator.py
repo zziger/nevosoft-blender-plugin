@@ -10,6 +10,7 @@ from ..structures.ChrFile import ChrFile
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
+from ..logger import operator_logger
 
 
 class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
@@ -68,17 +69,18 @@ Simplification process requires a valid animation file to be selected"""
             bpy.ops.nevosoft.import_simplified_character('INVOKE_DEFAULT', confirmed=True, chr_filepath=self.chr_filepath, load_at_0z=self.load_at_0z)
             return {'FINISHED'}
         
-        try:
-            chr = ChrFile.read(self.chr_filepath)
-            anm = AnmFile.read(self.filepath)
-            directory = str(Path(self.chr_filepath).parent)
-            obj = chr.createSimplified(anm, directory, self.load_at_0z)
-            if self.apply_anim:
-                anm.create(obj.parent)
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
-        return {'FINISHED'}
+        with operator_logger(self):
+            try:
+                chr = ChrFile.read(self.chr_filepath)
+                anm = AnmFile.read(self.filepath)
+                directory = str(Path(self.chr_filepath).parent)
+                obj = chr.createSimplified(anm, directory, self.load_at_0z)
+                if self.apply_anim:
+                    anm.create(obj.parent)
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
+            return {'FINISHED'}
 
     @staticmethod
     def load():

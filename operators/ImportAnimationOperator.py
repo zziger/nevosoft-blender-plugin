@@ -29,18 +29,19 @@ Armature must have one mesh child"""
     def poll(cls, context):
         return ExportSkeletonOperator.find_armature() is not None
     def execute(self, context):
-        try:
-            obj = ExportSkeletonOperator.find_armature()
-            if obj is None:
-                raise Exception("Failed to find an armature to import animation to. Select armature in your 3D viewport and make sure it has a mesh child")
-            
-            anm = AnmFile.read(self.filepath)
-            anm.create(obj)
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
+        with operator_logger(self):
+            try:
+                obj = ExportSkeletonOperator.find_armature()
+                if obj is None:
+                    raise Exception("Failed to find an armature to import animation to. Select armature in your 3D viewport and make sure it has a mesh child")
+                
+                anm = AnmFile.read(self.filepath)
+                anm.create(obj)
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
 
-        return {'FINISHED'}
+            return {'FINISHED'}
 
     @staticmethod
     def load():

@@ -5,6 +5,7 @@ import bpy_extras
 from bpy.props import BoolProperty, StringProperty
 from bpy.types import Panel
 from .ExportSkeletonOperator import ExportSkeletonOperator
+from ..logger import operator_logger
 
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
@@ -33,17 +34,18 @@ Armature must have one mesh child. Output character includes model, armature and
         return ExportSkeletonOperator.find_armature() is not None
 
     def execute(self, context):
-        try:
-            obj = ExportSkeletonOperator.find_armature()
-            if obj is None:
-                raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
-            
-            ChrFile.write(self.filepath, obj, self.texture_name)
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
+        with operator_logger(self):
+            try:
+                obj = ExportSkeletonOperator.find_armature()
+                if obj is None:
+                    raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
+                
+                ChrFile.write(self.filepath, obj, self.texture_name)
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
 
-        return {'FINISHED'}
+            return {'FINISHED'}
     
     def draw(self, context):
         pass

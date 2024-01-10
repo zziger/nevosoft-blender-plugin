@@ -7,6 +7,7 @@ from bpy.types import Panel
 
 from ..helpers import OperatorBase
 from ..structures.CgoFile import CgoFile
+from ..logger import operator_logger
 
 # TODO: allow to export selected meshes instead of the whole scene
 
@@ -32,17 +33,18 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
         return bpy.context.scene is not None and len(bpy.context.scene.objects) > 0
 
     def execute(self, context):
-        try:
-            if bpy.context.scene is None:
-                raise Exception("Failed to find a scene to export. Are you running headless?")
-            
-            if len(bpy.context.scene.objects) == 0:
-                raise Exception("No objects found in the scene")
+        with operator_logger(self):
+            try:
+                if bpy.context.scene is None:
+                    raise Exception("Failed to find a scene to export. Are you running headless?")
+                
+                if len(bpy.context.scene.objects) == 0:
+                    raise Exception("No objects found in the scene")
 
-            CgoFile.write(self.filepath, bpy.context.scene, self.bake_materials)
-        except Exception as e:
-            self.error(str(e))
-            traceback.print_exception(e)
+                CgoFile.write(self.filepath, bpy.context.scene, self.bake_materials)
+            except Exception as e:
+                self.error(str(e))
+                traceback.print_exception(e)
 
         return {'FINISHED'}
 
