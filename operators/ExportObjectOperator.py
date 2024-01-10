@@ -11,12 +11,18 @@ from ..structures.CgoFile import CgoFile
 
 class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
     bl_idname = "nevosoft.export_object"
-    bl_label = "Nevosoft object (.cgo)"
+    bl_label = "Nevosoft Object (.cgo)"
     bl_action = "export"
     bl_showtime = True
     bl_update_view = True
     check_extension = True
     filename_ext = ".cgo"
+
+    bake_materials: BoolProperty(
+        name="Bake materials",
+        description="Bake materials instead of searching for texture",
+        default=False,
+    )
 
     def execute(self, context):
         try:
@@ -29,12 +35,6 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
             self.error(str(e))
             traceback.print_exception(e)
         return {'FINISHED'}
-
-    bake_materials: BoolProperty(
-        name="Bake materials",
-        description="Bake materials instead of searching for texture",
-        default=False,
-    )
 
     def draw(self, context):
         pass
@@ -50,10 +50,6 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
         bpy.utils.unregister_class(ExportObjectOperator)
         bpy.utils.unregister_class(CUSTOM_PT_object_export_settings)
         bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportObjectOperator.bl_idname, text=ExportObjectOperator.bl_label)
 
 
 class CUSTOM_PT_object_export_settings(Panel):
@@ -79,3 +75,7 @@ class CUSTOM_PT_object_export_settings(Panel):
 
         operator = context.space_data.active_operator
         layout.prop(operator, 'bake_materials')
+
+
+def menu_func_export(self, context):
+    self.layout.operator(ExportObjectOperator.bl_idname, text=ExportObjectOperator.bl_label, icon="MESH_CUBE")

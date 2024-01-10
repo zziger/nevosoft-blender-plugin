@@ -12,7 +12,7 @@ from ..structures.AnmFile import AnmFile
 
 class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_simplified_skeleton"
-    bl_label = "Simplify skeleton"
+    bl_label = "Simplify Nevosoft Skeleton (.skl)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -28,8 +28,13 @@ class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_ext
         default=False,
     )
 
+    apply_anim: bpy.props.BoolProperty(
+        name="Apply animation",
+        description="Apply selected animation after import",
+        default=True
+    )
+
     skl_filepath: bpy.props.StringProperty(default="")
-    apply_anim: bpy.props.BoolProperty(name="Apply animation", description="Apply selected animation after import", default=False)
     confirmed: bpy.props.BoolProperty(default=False)
 
     def invoke(self, context, event):

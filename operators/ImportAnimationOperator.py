@@ -12,7 +12,7 @@ from ..structures.AnmFile import AnmFile
 
 class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_animation"
-    bl_label = "Nevosoft animation (.anm)"
+    bl_label = "Nevosoft Animation (.anm)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -44,4 +44,4 @@ class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportAnimationOperator.bl_idname, text=ImportAnimationOperator.bl_label)
+    self.layout.operator(ImportAnimationOperator.bl_idname, text=ImportAnimationOperator.bl_label, icon="ANIM")

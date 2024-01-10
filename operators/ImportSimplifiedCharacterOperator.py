@@ -14,7 +14,7 @@ from ..structures.AnmFile import AnmFile
 
 class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_simplified_character"
-    bl_label = "Simplify character"
+    bl_label = "Simplify Nevosoft Character (.chr)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -30,9 +30,14 @@ class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_ex
         default=False,
     )
 
+    apply_anim: bpy.props.BoolProperty(
+        name="Apply animation",
+        description="Apply selected animation after import",
+        default=True
+    )
+
     chr_filepath: bpy.props.StringProperty(default="")
     confirmed: bpy.props.BoolProperty(default=False)
-    apply_anim: bpy.props.BoolProperty(name="Apply animation", description="Apply selected animation after import", default=False)
 
     def invoke(self, context, event):
         if not self.confirmed:

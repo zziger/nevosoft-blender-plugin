@@ -4,7 +4,6 @@ import traceback
 import bpy
 import bpy_extras
 
-
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
 from ..structures.MshFile import MshFile
@@ -14,7 +13,7 @@ from ..structures.AnmFile import AnmFile
 
 class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_character"
-    bl_label = "Nevosoft character (.chr)"
+    bl_label = "Nevosoft Character (.chr)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -58,4 +57,4 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportCharacterOperator.bl_idname, text=ImportCharacterOperator.bl_label)
+    self.layout.operator(ImportCharacterOperator.bl_idname, text=ImportCharacterOperator.bl_label, icon="OUTLINER_OB_ARMATURE")

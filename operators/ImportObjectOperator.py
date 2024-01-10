@@ -12,7 +12,7 @@ from ..utils import clear_scene
 
 class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_object"
-    bl_label = "Nevosoft object (.cgo)"
+    bl_label = "Nevosoft Object (.cgo)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -20,6 +20,12 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     filter_glob: bpy.props.StringProperty(
         default='*.cgo',
         options={'HIDDEN'}
+    )
+
+    clear_scene: BoolProperty(
+        name="Clear scene",
+        description="Clear whole scene before importing",
+        default=True,
     )
 
     def execute(self, context):
@@ -33,12 +39,6 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
             self.error(str(e))
             traceback.print_exception(e)
         return {'FINISHED'}
-
-    clear_scene: BoolProperty(
-        name="Clear scene",
-        description="Clear whole scene before importing",
-        default=True,
-    )
 
     def draw(self, context):
         pass
@@ -54,10 +54,6 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
         bpy.utils.unregister_class(ImportObjectOperator)
         bpy.utils.unregister_class(CUSTOM_PT_object_import_settings)
         bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-
-
-def menu_func_import(self, context):
-    self.layout.operator(ImportObjectOperator.bl_idname, text=ImportObjectOperator.bl_label)
 
 
 class CUSTOM_PT_object_import_settings(Panel):
@@ -83,3 +79,7 @@ class CUSTOM_PT_object_import_settings(Panel):
 
         operator = context.space_data.active_operator
         layout.prop(operator, 'clear_scene')
+
+
+def menu_func_import(self, context):
+    self.layout.operator(ImportObjectOperator.bl_idname, text=ImportObjectOperator.bl_label, icon="MESH_CUBE")

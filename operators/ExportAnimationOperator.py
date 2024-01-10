@@ -6,9 +6,10 @@ import bpy_extras
 from ..helpers import OperatorBase
 from ..structures.AnmFile import AnmFile
 
+
 class ExportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
     bl_idname = "nevosoft.export_animation"
-    bl_label = "Nevosoft animation (.anm)"
+    bl_label = "Nevosoft Animation (.anm)"
     bl_action = "export"
     bl_showtime = True
     bl_update_view = True
@@ -40,4 +41,4 @@ class ExportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportAnimationOperator.bl_idname, text=ExportAnimationOperator.bl_label)
+    self.layout.operator(ExportAnimationOperator.bl_idname, text=ExportAnimationOperator.bl_label, icon="ANIM")

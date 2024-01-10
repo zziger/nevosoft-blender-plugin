@@ -9,7 +9,7 @@ from ..structures.MshFile import MshFile
 
 class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_mesh"
-    bl_label = "Nevosoft mesh (.msh)"
+    bl_label = "Nevosoft Mesh (.msh)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -41,4 +41,4 @@ class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.I
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportMeshOperator.bl_idname, text=ImportMeshOperator.bl_label)
+    self.layout.operator(ImportMeshOperator.bl_idname, text=ImportMeshOperator.bl_label, icon="MESH_DATA")

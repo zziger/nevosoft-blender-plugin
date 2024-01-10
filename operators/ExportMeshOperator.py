@@ -9,7 +9,7 @@ from ..structures.MshFile import MshFile
 
 class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
     bl_idname = "nevosoft.export_mesh"
-    bl_label = "Nevosoft mesh (.msh)"
+    bl_label = "Nevosoft Mesh (.msh)"
     bl_action = "export"
     bl_showtime = True
     bl_update_view = True
@@ -40,4 +40,4 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportMeshOperator.bl_idname, text=ExportMeshOperator.bl_label)
+    self.layout.operator(ExportMeshOperator.bl_idname, text=ExportMeshOperator.bl_label, icon="MESH_DATA")

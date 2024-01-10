@@ -12,7 +12,7 @@ from ..structures.AnmFile import AnmFile
 
 class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_skeleton"
-    bl_label = "Nevosoft skeleton (.skl)"
+    bl_label = "Nevosoft Skeleton (.skl)"
     bl_action = "import"
     bl_showtime = True
     bl_update_view = True
@@ -58,4 +58,4 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportSkeletonOperator.bl_idname, text=ImportSkeletonOperator.bl_label)
+    self.layout.operator(ImportSkeletonOperator.bl_idname, text=ImportSkeletonOperator.bl_label, icon="ARMATURE_DATA")

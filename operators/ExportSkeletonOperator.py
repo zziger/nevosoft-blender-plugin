@@ -6,9 +6,10 @@ import bpy_extras
 from ..helpers import OperatorBase
 from ..structures.SklFile import SklFile
 
+
 class ExportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
     bl_idname = "nevosoft.export_skeleton"
-    bl_label = "Nevosoft skeleton (.skl)"
+    bl_label = "Nevosoft Skeleton (.skl)"
     bl_action = "export"
     bl_showtime = True
     bl_update_view = True
@@ -39,4 +40,4 @@ class ExportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportSkeletonOperator.bl_idname, text=ExportSkeletonOperator.bl_label)
+    self.layout.operator(ExportSkeletonOperator.bl_idname, text=ExportSkeletonOperator.bl_label, icon="ARMATURE_DATA")
