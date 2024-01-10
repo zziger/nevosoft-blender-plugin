@@ -274,7 +274,7 @@ class SklFile:
         # creating material
         mat = bpy.data.materials.new(name="material")  # todo name
         mat.use_nodes = True
-        matBsdf = mat.node_tree.nodes["Principled BSDF"]
+        matBsdf = next(filter(lambda e: e.type == 'BSDF_PRINCIPLED', mat.node_tree.nodes), None)
         matTex = mat.node_tree.nodes.new('ShaderNodeTexImage')
         mat.node_tree.links.new(matBsdf.inputs['Base Color'], matTex.outputs['Color'])
 
