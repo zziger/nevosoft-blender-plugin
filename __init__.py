@@ -14,6 +14,8 @@ from .operators.RetargetAnimationsOperator import RetargetAnimationsOperator
 from .operators.RetargetModelOperator import RetargetModelOperator
 from .settings import PluginPreferences
 from .logger import logger
+import bpy
+from .lang.ru import ru_lang
 
 from .extensions import BoneProperties, ModelTools
 
@@ -33,6 +35,10 @@ bl_info = {
 
 def register():
     logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, bl_info["version"])))
+
+    bpy.app.translations.register(__name__, {
+        'ru': ru_lang
+    })
 
     PluginPreferences.load()
     BoneProperties.load()
@@ -84,3 +90,5 @@ def unregister():
     ModelTools.unload()
     BoneProperties.unload()
     PluginPreferences.unload()
+
+    bpy.app.translations.unregister(__name__)
