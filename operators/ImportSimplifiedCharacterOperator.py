@@ -45,7 +45,7 @@ Simplification process requires a valid animation file to be selected"""
 
     def invoke(self, context, event):
         if not self.confirmed:
-            return context.window_manager.invoke_props_dialog(self)
+            return context.window_manager.invoke_props_dialog(self, width=600)
         else:
             context.window_manager.fileselect_add(self)
             return {'RUNNING_MODAL'}
@@ -55,7 +55,7 @@ Simplification process requires a valid animation file to be selected"""
             layout = self.layout
             layout.label(text="Selected model is too complex.")
             layout.label(text="To simplify the model, please select a valid animation.")
-            layout.label(text="Continue?")
+            layout.label(text="Proceed?")
         else:
             layout = self.layout
         

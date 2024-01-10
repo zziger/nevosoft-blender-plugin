@@ -32,7 +32,7 @@ class RetargetModelOperator(bpy.types.Operator, OperatorBase):
             layout = self.layout
             layout.label(text="This will change model's rest pose to the current pose and retarget current animation")
             layout.label(text="All animations that were not retargeted will not match this model anymore")
-            layout.label(text="Continue?")
+            layout.label(text="Proceed?")
     
     def invoke(self, context, event):
         if not self.confirmed:
