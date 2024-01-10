@@ -1,18 +1,25 @@
+[Версия на русском](README_RU.md)
+
 # Nevosoft Blender plugin
 
-| [**Download / Скачать**](https://github.com/zziger/nevosoft-blender-plugin/archive/refs/heads/master.zip) | [**Discord сервер**](https://discord.supercow.community) 
+Blender Plugin that allows to import and export 3D formats of Nevosoft games
+
+| [**Download / Скачать**](https://github.com/zziger/nevosoft-blender-plugin/archive/refs/heads/master.zip) | [**Discord Server**](https://discord.supercow.community) 
 |---|---|
 
-## Установка
+## Instllation
 
-- Скачать архив по ссылке выше (не разархивировать!)
-- Открыть Blender
-- Открыть меню `Edit -> Preferences...`
-- Открыть секцию `Add-ons`
-- Нажать на кнопку `Install...` сверху интерфейса
-- Выбрать скачанный архив
+- Download ZIP from the link above
+- Open Blender
+- Go to `Edit -> Preferences...`
+- Open `Add-ons` section
+- Click `Install...` at the top of the window
+- Select downloaded ZIP
 
-# Поддерживаемые форматы
+> [!TIP]
+> Recommended Blender versions: **3.6.2** or **4.0.2**
+
+# Supported formats
 
 - MSH
 - CGO
@@ -20,10 +27,10 @@
 - ANM
 - CHR
 
-## Лицензия
+## License
 
 [MIT](LICENSE)
 
 ## Contributions
 
-PR приветствуются
+PR are very welcome
