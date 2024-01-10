@@ -7,8 +7,10 @@ from math import floor
 import bmesh
 import bpy
 import bpy.types
+from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG
 from mathutils import Vector, Matrix, Quaternion
-from ..helpers import getBoneTag, findBoneByTag
+from ..settings import get_preferences
+from ..helpers import getBoneTag, findBoneByTag, set_active
 
 from .AnmFile import AnmFile
 
@@ -332,11 +334,11 @@ class SklFile:
         modifier = sklObj.modifiers.new(type='ARMATURE', name="Armature")
         modifier.object = rig
         bpy.context.scene.collection.objects.link(rig)
-        bpy.context.view_layer.objects.active = rig
 
         bonemap: map[int, bpy.types.Bone] = {}
 
-        bpy.ops.object.editmode_toggle()
+        set_active(rig)
+        bpy.ops.object.mode_set(mode='EDIT')
         for index, bone in enumerate(self.bones):
             name = bone.name
             current_bone = armature.edit_bones.new(name)
@@ -348,7 +350,7 @@ class SklFile:
                     current_bone.parent = findBoneByTag(armature.edit_bones, indexInner)
             current_bone.use_local_location = False
             current_bone.head = bone.pos
-            current_bone.tail = bone.pos + Vector((0, 0.01, 0))
+            current_bone.tail = bone.pos + (BONE_DIRECTION_DEBUG if get_preferences().debug else BONE_DIRECTION)
 
             current_bone.use_local_location = True
 
@@ -358,7 +360,7 @@ class SklFile:
                 if link.weight != 0:
                     sklObj.vertex_groups[findBoneByTag(armature.edit_bones, link.indx).name].add([i], link.weight, "ADD")
 
-        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.mode_set(mode='OBJECT')
 
         return sklObj
 
@@ -410,15 +412,13 @@ class SklFile:
 
     @staticmethod
     def prepareBoneWrite(armature: bpy.types.Armature, data: SklNs, ibone: int, pbone_index: int):
-        bone = findBoneByTag(armature.bones, ibone)
+        bone = findBoneByTag(armature.edit_bones, ibone)
 
         if ibone == 0:
             data.boneVecs[ibone] = bone.head
         else:
-            # pbone = armature.bones[str(pbone_index)]
-            # vec = Vector(bone.head)
-            # vec.negate()
-            data.boneVecs[ibone] = bone.head
+            pbone = findBoneByTag(armature.edit_bones, pbone_index)
+            data.boneVecs[ibone] = bone.head - pbone.head
 
         child_ids: list[int] = []
         for children in bone.children:
@@ -432,16 +432,16 @@ class SklFile:
     @staticmethod
     def write(rig: bpy.types.Object, filename):
         data = SklNs()
-        bpy.context.view_layer.objects.active = rig
 
         armature: bpy.types.Armature = rig.data
-
         data.boneVecs = [None] * len(armature.bones)
         data.bones = [None] * len(armature.bones)
+
+        set_active(rig)
+        bpy.ops.object.mode_set(mode='EDIT')
         SklFile.prepareBoneWrite(armature, data, 0, 0)
 
         obj = rig.children[0]
-        bpy.ops.object.editmode_toggle()
         bm: bmesh.types.BMesh = bmesh.new()
         deps_graph = bpy.context.evaluated_depsgraph_get()
         bm.from_object(obj, deps_graph)
@@ -481,6 +481,5 @@ class SklFile:
             data.vertLinks[index] = ns_link
 
         data.write(filename)
-        bpy.ops.object.editmode_toggle()
-
+        bpy.ops.object.mode_set(mode='OBJECT')
 
