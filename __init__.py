@@ -59,4 +59,28 @@ def register():
     RetargetModelOperator.load()
 
 def unregister():
-    pass
+    logger.info("Unloading Nevosoft blender plugin")
+    
+    # Import
+    ImportObjectOperator.unload()
+    ImportMeshOperator.unload()
+    ImportCharacterOperator.unload()
+    ImportSkeletonOperator.unload()
+    ImportAnimationOperator.unload()
+    ImportSimplifiedCharacterOperator.unload()
+    ImportSimplifiedSkeletonOperator.unload()
+
+    # Export
+    ExportObjectOperator.unload()
+    ExportMeshOperator.unload()
+    ExportCharacterOperator.unload()
+    ExportSkeletonOperator.unload()
+    ExportAnimationOperator.unload()
+
+    # Tools
+    RetargetAnimationsOperator.unload()
+    RetargetModelOperator.unload()
+    
+    ModelTools.unload()
+    BoneProperties.unload()
+    PluginPreferences.unload()
