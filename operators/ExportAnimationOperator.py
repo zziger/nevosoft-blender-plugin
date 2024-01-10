@@ -2,6 +2,7 @@ import traceback
 
 import bpy
 import bpy_extras
+from .ExportSkeletonOperator import ExportSkeletonOperator
 
 from ..helpers import OperatorBase
 from ..structures.AnmFile import AnmFile
@@ -15,18 +16,28 @@ class ExportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
     bl_update_view = True
     check_extension = True
     filename_ext = ".anm"
+    
+    @classmethod
+    def poll(cls, context):
+        obj = ExportSkeletonOperator.find_armature()
+        return obj is not None and obj.animation_data is not None and obj.animation_data.action is not None
 
     def execute(self, context):
         try:
-            if bpy.context.active_object is None:
-                raise Exception("No active object found")
+            obj = ExportSkeletonOperator.find_armature()
+            if obj is None:
+                raise Exception("Failed to find an armature to export animation from. Select armature in your 3D viewport and make sure it has a mesh child")
+            
+            if obj.animation_data is None or obj.animation_data.action is None:
+                raise Exception("Failed to find an animation to export. Make sure selected armature contains an animation")
 
-            anm = AnmFile.fromObject(bpy.context.active_object)
+            anm = AnmFile.fromObject(obj)
             anm.write(self.filepath)
-            self.message(f"Animation was exported successfully")
+            self.message(f"Exported animation successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
+
         return {'FINISHED'}
 
     @staticmethod

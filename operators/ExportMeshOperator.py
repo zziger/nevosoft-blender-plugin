@@ -16,16 +16,30 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
     check_extension = True
     filename_ext = ".msh"
 
+    @staticmethod
+    def find_mesh():
+        for obj in bpy.context.selected_objects:
+            if obj.type == 'MESH':
+                return obj
+            
+        return None
+    
+    @classmethod
+    def poll(cls, context):
+        return ExportMeshOperator.find_mesh() is not None
+    
     def execute(self, context):
         try:
-            if bpy.context.active_object is None:
-                raise Exception("No active object found")
+            obj = ExportMeshOperator.find_mesh()
+            if obj is None:
+                raise Exception("Failed to find a mesh to export. Select a mesh in your 3D viewport")
 
-            MshFile.write(bpy.context.active_object, self.filepath)
-            self.message(f"Mesh exported successfully")
+            MshFile.write(obj, self.filepath)
+            self.message(f"Exported mesh successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
+
         return {'FINISHED'}
 
     @staticmethod

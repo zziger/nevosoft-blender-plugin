@@ -8,7 +8,7 @@ from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
-
+from .ExportSkeletonOperator import ExportSkeletonOperator
 
 class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     bl_idname = "nevosoft.import_animation"
@@ -21,15 +21,23 @@ class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
         default='*.anm',
         options={'HIDDEN'}
     )
-
+    
+    @classmethod
+    def poll(cls, context):
+        return ExportSkeletonOperator.find_armature() is not None
     def execute(self, context):
         try:
+            obj = ExportSkeletonOperator.find_armature()
+            if obj is None:
+                raise Exception("Failed to find an armature to import animation to. Select armature in your 3D viewport and make sure it has a mesh child")
+            
             anm = AnmFile.read(self.filepath)
-            anm.create(bpy.context.active_object)
-            self.message("Animation imported successfully")
+            anm.create(obj)
+            self.message("Imported animation successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
+
         return {'FINISHED'}
 
     @staticmethod

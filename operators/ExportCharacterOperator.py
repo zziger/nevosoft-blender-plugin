@@ -4,6 +4,7 @@ import bpy
 import bpy_extras
 from bpy.props import BoolProperty, StringProperty
 from bpy.types import Panel
+from .ExportSkeletonOperator import ExportSkeletonOperator
 
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
@@ -23,17 +24,23 @@ class ExportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
         description="Name for texture file",
         default=""
     )
+    
+    @classmethod
+    def poll(cls, context):
+        return ExportSkeletonOperator.find_armature() is not None
 
     def execute(self, context):
         try:
-            if bpy.context.active_object is None:
-                raise Exception("No active object found")
+            obj = ExportSkeletonOperator.find_armature()
+            if obj is None:
+                raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
             
-            ChrFile.write(self.filepath, bpy.context.active_object, self.texture_name)
-            self.message(f"Character exported successfully")
+            ChrFile.write(self.filepath, obj, self.texture_name)
+            self.message(f"Exported character successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
+
         return {'FINISHED'}
     
     def draw(self, context):

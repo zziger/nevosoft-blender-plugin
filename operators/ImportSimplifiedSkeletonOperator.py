@@ -72,7 +72,7 @@ class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_ext
             obj = skl.create(Path(self.skl_filepath).stem, (0, 0, 0), None)
             if self.apply_anim:
                 anm.create(obj.parent)
-            self.message("Skeleton was simplified and imported successfully")
+            self.message("Simplified and imported skeleton successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

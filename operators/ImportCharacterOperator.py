@@ -39,10 +39,11 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
                 return {'FINISHED'}
             
             chr.create(directory, self.load_at_0z)
-            self.message("Character was imported successfully")
+            self.message("Imported character successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
+
         return {'FINISHED'}
 
     @staticmethod

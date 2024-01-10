@@ -72,7 +72,7 @@ class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_ex
             obj = chr.createSimplified(anm, directory, self.load_at_0z)
             if self.apply_anim:
                 anm.create(obj.parent)
-            self.message("Character was simplified and imported successfully")
+            self.message("Simplified and imported character successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

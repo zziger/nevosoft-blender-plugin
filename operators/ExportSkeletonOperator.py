@@ -16,16 +16,33 @@ class ExportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
     check_extension = True
     filename_ext = ".skl"
 
+    @staticmethod
+    def find_armature():
+        for obj in bpy.context.selected_objects:
+            if obj.type == 'ARMATURE' and len(obj.children) == 1 and obj.children[0].type == 'MESH':
+                return obj
+            
+            if obj.type == 'MESH' and obj.parent is not None and len(obj.parent.children) == 1 and obj.parent.type == 'ARMATURE':
+                return obj.parent
+            
+        return None
+    
+    @classmethod
+    def poll(cls, context):
+        return ExportSkeletonOperator.find_armature() is not None
+
     def execute(self, context):
         try:
-            if bpy.context.active_object is None:
-                raise Exception("No active object found")
+            obj = ExportSkeletonOperator.find_armature()
+            if obj is None:
+                raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
 
-            SklFile.write(bpy.context.active_object, self.filepath)
-            self.message(f"Skeleton exported successfully")
+            SklFile.write(obj, self.filepath)
+            self.message(f"Exported skeleton succesfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
+
         return {'FINISHED'}
 
     @staticmethod
