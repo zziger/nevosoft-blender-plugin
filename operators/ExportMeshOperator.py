@@ -9,7 +9,7 @@ from ..structures.MshFile import MshFile
 
 class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
     """Export Nevosoft Mesh file from selected mesh"""
-    
+
     bl_idname = "nevosoft.export_mesh"
     bl_label = "Nevosoft Mesh (.msh)"
     bl_action = "export"
@@ -37,7 +37,6 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
                 raise Exception("Failed to find a mesh to export. Select a mesh in your 3D viewport")
 
             MshFile.write(obj, self.filepath)
-            self.message(f"Exported mesh successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

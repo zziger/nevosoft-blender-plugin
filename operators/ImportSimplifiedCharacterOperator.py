@@ -75,7 +75,6 @@ Simplification process requires a valid animation file to be selected"""
             obj = chr.createSimplified(anm, directory, self.load_at_0z)
             if self.apply_anim:
                 anm.create(obj.parent)
-            self.message("Simplified and imported character successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

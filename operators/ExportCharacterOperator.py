@@ -39,7 +39,6 @@ Armature must have one mesh child. Output character includes model, armature and
                 raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
             
             ChrFile.write(self.filepath, obj, self.texture_name)
-            self.message(f"Exported character successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

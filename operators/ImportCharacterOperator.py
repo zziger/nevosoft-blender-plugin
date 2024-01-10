@@ -13,7 +13,7 @@ from ..structures.AnmFile import AnmFile
 
 class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
     """Import Nevosoft Character file into current scene"""
-    
+
     bl_idname = "nevosoft.import_character"
     bl_label = "Nevosoft Character (.chr)"
     bl_action = "import"
@@ -41,7 +41,6 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
                 return {'FINISHED'}
             
             chr.create(directory, self.load_at_0z)
-            self.message("Imported character successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

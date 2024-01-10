@@ -25,7 +25,6 @@ class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.I
         try:
             skl = MshFile.read(self.filepath)
             skl.create()
-            self.message("Imported mesh successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

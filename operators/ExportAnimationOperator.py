@@ -36,7 +36,6 @@ Armature must have one mesh child, animation data includes bone rotations and ar
 
             anm = AnmFile.fromObject(obj)
             anm.write(self.filepath)
-            self.message(f"Exported animation successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

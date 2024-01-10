@@ -36,7 +36,6 @@ Armature must have one mesh child"""
             
             anm = AnmFile.read(self.filepath)
             anm.create(obj)
-            self.message("Imported animation successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

@@ -42,7 +42,6 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
                 skl.moveTo0z()
                 
             skl.create(Path(self.filepath).stem, (0, 0, 0), None)
-            self.message("Imported skeleton successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

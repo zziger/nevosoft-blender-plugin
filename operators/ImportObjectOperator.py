@@ -36,7 +36,6 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
                 clear_scene()
             cgo = CgoFile.read(self.filepath)
             cgo.create()
-            self.message("Imported object successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)

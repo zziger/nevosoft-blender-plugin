@@ -40,7 +40,6 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
                 raise Exception("No objects found in the scene")
 
             CgoFile.write(self.filepath, bpy.context.scene, self.bake_materials)
-            self.message(f"Exported object successfully")
         except Exception as e:
             self.error(str(e))
             traceback.print_exception(e)
