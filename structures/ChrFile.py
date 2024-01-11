@@ -71,7 +71,7 @@ class ChrFile:
                             if isinstance(link.from_node,
                                             bpy.types.ShaderNodeTexImage) and link.from_node.image is not None:
                                 found = True
-                                link.from_node.image.save_render(path.join(base_dir, chr.texture))
+                                link.from_node.image.save(filepath=path.join(base_dir, chr.texture))
 
         if not found:
             raise Exception("Cannot find texture for mesh " + mesh.name)
