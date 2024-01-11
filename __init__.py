@@ -23,7 +23,7 @@ bl_info = {
     "name": "Nevosoft Model Formats (.cgo, .msh, .skl, .chr, .anm)",
     "description": "Import/export model and animation formats used in Nevosoft games",
     "author": "zziger, Creepobot",
-    "version": (0, 4, 0),
+    "version": (0, 5, 0),
     "blender": (3, 6, 2),
     "warning": "",
     "location": "File > Import/Export > Nevosoft ...",
