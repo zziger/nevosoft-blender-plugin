@@ -7,7 +7,7 @@ Blender Plugin that allows to import and export 3D formats of Nevosoft games
 | [**Download / Скачать**](https://github.com/zziger/nevosoft-blender-plugin/archive/refs/heads/master.zip) | [**Discord Server**](https://discord.supercow.community) 
 |---|---|
 
-## Instllation
+## Installation
 
 - Download ZIP from the link above
 - Open Blender
