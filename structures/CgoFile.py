@@ -57,47 +57,47 @@ class CgoFile:
             return CgoFile(meshes, path.dirname(filename))
 
     @staticmethod
-    def write(filename: str, scene: bpy.types.Scene, bake: bool) -> None:
+    def write(filename: str, objects: list[bpy.types.Object], bake: bool = False) -> None:
+        meshes: list[bpy.types.Object] = list(filter(lambda e: isinstance(e.data, bpy.types.Mesh), objects))
+
+        if len(meshes) == 0:
+            raise Exception("No available meshes found")
+
+        base_dir = path.dirname(filename)
+        name = path.splitext(path.basename(filename))[0]
+
+        lines = [
+            "[meshes]",
+            "",
+            f"nummeshes={len(meshes)}",
+            ""
+        ]
+
+        for index, mesh in enumerate(meshes):
+            mesh_path = f"{name}{index}.msh"
+            texture_path = f"{name}{index}.jpg"
+
+            if bake:
+                MshFile.write(mesh, path.join(base_dir, mesh_path), path.join(base_dir, texture_path))
+            else:
+                MshFile.write(mesh, path.join(base_dir, mesh_path))
+                assert isinstance(mesh.data, bpy.types.Mesh)
+
+                found = False
+                
+                if len(mesh.data.materials) > 0:
+                    found = save_mat_texture(mesh.data.materials[0], path.join(base_dir, texture_path))
+
+                if not found:
+                    raise Exception("Cannot find texture for mesh " + mesh.name)
+
+            lines.append(f"mesh{index}={mesh_path}")
+            if texture_path is not None:
+                lines.append(f"texture{index}={texture_path}")
+
+        lines.append("[bounds]")
+        lines.append("")
+        lines.append("numbounds=0")
+
         with open(filename, 'w') as file:
-            meshes: list[bpy.types.Object] = list(filter(lambda e: isinstance(e.data, bpy.types.Mesh), scene.objects))
-
-            if len(meshes) == 0:
-                raise Exception("No available meshes found")
-
-            base_dir = path.dirname(filename)
-            name = path.splitext(path.basename(filename))[0]
-
-            lines = [
-                "[meshes]",
-                "",
-                f"nummeshes={len(meshes)}",
-                ""
-            ]
-
-            for index, mesh in enumerate(meshes):
-                mesh_path = f"{name}{index}.msh"
-                texture_path = f"{name}{index}.jpg"
-
-                if bake:
-                    MshFile.write(mesh, path.join(base_dir, mesh_path), path.join(base_dir, texture_path))
-                else:
-                    MshFile.write(mesh, path.join(base_dir, mesh_path))
-                    assert isinstance(mesh.data, bpy.types.Mesh)
-
-                    found = False
-                    
-                    if len(mesh.data.materials) > 0:
-                        found = save_mat_texture(mesh.data.materials[0], path.join(base_dir, texture_path))
-
-                    if not found:
-                        raise Exception("Cannot find texture for mesh " + mesh.name)
-
-                lines.append(f"mesh{index}={mesh_path}")
-                if texture_path is not None:
-                    lines.append(f"texture{index}={texture_path}")
-
-            lines.append("[bounds]")
-            lines.append("")
-            lines.append("numbounds=0")
-
             file.writelines([line + "\n" for line in lines])

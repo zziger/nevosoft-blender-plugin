@@ -9,8 +9,6 @@ from ..helpers import OperatorBase
 from ..structures.CgoFile import CgoFile
 from ..logger import operator_logger
 
-# TODO: allow to export selected meshes instead of the whole scene
-
 class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
     """Export Nevosoft Object file from current scene"""
 
@@ -27,10 +25,16 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
         description="Bake materials instead of searching for texture",
         default=False,
     )
+
+    only_selected: BoolProperty(
+        name="Only selected",
+        description="Include selected objects only (instead of all objects in the scene)",
+        default=False,
+    )
     
     @classmethod
     def poll(cls, context):
-        return bpy.context.scene is not None and len(bpy.context.scene.objects) > 0
+        return bpy.context.scene is not None and len(bpy.context.scene.objects) > 0 or len(bpy.context.selected_objects) > 0
 
     def execute(self, context):
         with operator_logger(self):
@@ -41,7 +45,7 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
                 if len(bpy.context.scene.objects) == 0:
                     raise Exception("No objects found in the scene")
 
-                CgoFile.write(self.filepath, bpy.context.scene, self.bake_materials)
+                CgoFile.write(self.filepath, bpy.context.selected_objects if self.only_selected else bpy.context.scene.objects, bake=self.bake_materials)
             except Exception as e:
                 self.error(str(e))
                 traceback.print_exception(e)
@@ -87,6 +91,7 @@ class CUSTOM_PT_object_export_settings(Panel):
 
         operator = context.space_data.active_operator
         layout.prop(operator, 'bake_materials')
+        layout.prop(operator, 'only_selected')
 
 
 def menu_func_export(self, context):

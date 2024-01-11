@@ -54,4 +54,7 @@ ru_lang = {
     ('*', 'Import/export model and animation formats used in Nevosoft games'): 'Импорт/экспорт форматов моделей и анимаций, используемых в играх Nevosoft',
     ('*', 'File > Import/Export > Nevosoft ...'): 'Файл > Импортировать/Экспортировать > ... Nevosoft',
     ('*', 'Debug mode'): 'Режим отладки',
+    ('*', 'Only selected'): 'Только выделенные',
+    ('*', 'Include selected objects only (instead of all objects in the scene)'): 'Включить только выделенные объекты (вместо всех объектов в сцене)',
+    ('*', 'No available meshes found'): 'Не найдено доступных мешей',
 }
