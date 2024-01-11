@@ -28,6 +28,12 @@ Armature must have one mesh child. Output character includes model, armature and
         description="Name for texture file",
         default=""
     )
+
+    bake_materials: BoolProperty(
+        name="Bake materials",
+        description="Bake materials instead of searching for texture",
+        default=False,
+    )
     
     @classmethod
     def poll(cls, context):
@@ -40,7 +46,7 @@ Armature must have one mesh child. Output character includes model, armature and
                 if obj is None:
                     raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
                 
-                ChrFile.write(self.filepath, obj, self.texture_name)
+                ChrFile.write(self.filepath, obj, self.texture_name, bake=self.bake_materials)
             except Exception as e:
                 self.error(str(e))
                 traceback.print_exception(e)
@@ -86,6 +92,7 @@ class CUSTOM_PT_character_export_settings(Panel):
 
         operator = context.space_data.active_operator
         layout.prop(operator, 'texture_name')
+        layout.prop(operator, 'bake_materials')
 
 
 def menu_func_export(self, context):

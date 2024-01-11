@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from os import path
 
 import bpy
+from ..helpers import save_mat_texture
 
 from .MshFile import MshFile
 
@@ -75,7 +76,7 @@ class CgoFile:
 
             for index, mesh in enumerate(meshes):
                 mesh_path = f"{name}{index}.msh"
-                texture_path = f"{name}{index}.png"
+                texture_path = f"{name}{index}.jpg"
 
                 if bake:
                     MshFile.write(mesh, path.join(base_dir, mesh_path), path.join(base_dir, texture_path))
@@ -84,17 +85,9 @@ class CgoFile:
                     assert isinstance(mesh.data, bpy.types.Mesh)
 
                     found = False
+                    
                     if len(mesh.data.materials) > 0:
-                        mat = mesh.data.materials[0]
-                        if mat.use_nodes:
-                            for node in mat.node_tree.nodes:
-                                if isinstance(node, bpy.types.ShaderNodeBsdfPrincipled):
-                                    if len(node.inputs['Base Color'].links) > 0:
-                                        link = node.inputs['Base Color'].links[0]
-                                        if isinstance(link.from_node,
-                                                      bpy.types.ShaderNodeTexImage) and link.from_node.image is not None:
-                                            found = True
-                                            link.from_node.image.save_render(path.join(base_dir, texture_path))
+                        found = save_mat_texture(mesh.data.materials[0], path.join(base_dir, texture_path))
 
                     if not found:
                         raise Exception("Cannot find texture for mesh " + mesh.name)

@@ -9,6 +9,7 @@ old_exposure = 0
 old_colorspace = "Raw"
 old_color_depth = "8"
 old_color_mode = "RGBA"
+old_engine = "BLENDER_EEVEE"
 
 BAKE_SAMPLES = 4
 IMAGE_FORMAT = "JPEG"
@@ -18,9 +19,10 @@ BUMP_BAKE_MULTIPLIER = 2.0
 
 
 def prep_bake():
-    global old_samples, old_file_format, old_color_depth, old_color_mode
+    global old_samples, old_file_format, old_color_depth, old_color_mode, old_engine
     global old_view_transform, old_look, old_gamma, old_exposure, old_colorspace
 
+    old_engine = bpy.context.scene.render.engine
     old_samples = bpy.context.scene.cycles.samples
     old_file_format = bpy.context.scene.render.image_settings.file_format
     old_color_depth = bpy.context.scene.render.image_settings.color_depth
@@ -31,6 +33,7 @@ def prep_bake():
     old_exposure = bpy.context.scene.view_settings.exposure
     old_colorspace = bpy.context.scene.sequencer_colorspace_settings.name
 
+    bpy.context.scene.render.engine = 'CYCLES'
     bpy.context.scene.cycles.samples = BAKE_SAMPLES
 
     bpy.context.scene.cycles.preview_samples = BAKE_SAMPLES
@@ -52,13 +55,14 @@ def prep_bake():
     bpy.context.scene.view_settings.look = 'None'
     bpy.context.scene.view_settings.gamma = 1
     bpy.context.scene.view_settings.exposure = 0
-    bpy.context.scene.sequencer_colorspace_settings.name = 'Raw'
+    bpy.context.scene.sequencer_colorspace_settings.name = 'sRGB'
 
 
 def post_bake():
-    global old_samples, old_file_format, old_color_depth, old_color_mode
+    global old_samples, old_file_format, old_color_depth, old_color_mode, old_engine
     global old_view_transform, old_look, old_gamma, old_exposure, old_colorspace
 
+    bpy.context.scene.render.engine = old_engine
     bpy.context.scene.cycles.samples = old_samples
     bpy.context.scene.cycles.preview_samples = old_samples
     bpy.context.scene.render.image_settings.file_format = old_file_format

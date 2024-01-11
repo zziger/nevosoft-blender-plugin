@@ -3,8 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from os import path
 from pathlib import Path
+from ..bake import bake_texture
 
 import bpy
+from ..helpers import save_mat_texture
 
 from .SklFile import SklFile
 from .AnmFile import AnmFile
@@ -49,7 +51,7 @@ class ChrFile:
 
 
     @staticmethod
-    def write(filename: str, object: bpy.types.Object, texture_name: str):
+    def write(filename: str, object: bpy.types.Object, texture_name: str, bake: bool = True):
         name = Path(filename).stem
         base_dir = path.dirname(filename)
 
@@ -60,21 +62,16 @@ class ChrFile:
         chr = ChrFile(name + ".skl", texture_name if texture_name != "" else (name + ".jpg"))
 
         mesh = object.children[0]
-        found = False
-        if len(mesh.data.materials) > 0:
-            mat = mesh.data.materials[0]
-            if mat.use_nodes:
-                for node in mat.node_tree.nodes:
-                    if isinstance(node, bpy.types.ShaderNodeBsdfPrincipled):
-                        if len(node.inputs['Base Color'].links) > 0:
-                            link = node.inputs['Base Color'].links[0]
-                            if isinstance(link.from_node,
-                                            bpy.types.ShaderNodeTexImage) and link.from_node.image is not None:
-                                found = True
-                                link.from_node.image.save(filepath=path.join(base_dir, chr.texture))
 
-        if not found:
-            raise Exception("Cannot find texture for mesh " + mesh.name)
+        if bake:
+            bake_texture(mesh, path.join(base_dir, chr.texture))
+        else:
+            found = False
+            if len(mesh.data.materials) > 0:
+                found = save_mat_texture(mesh.data.materials[0], path.join(base_dir, chr.texture))
+
+            if not found:
+                raise Exception("Cannot find texture for mesh " + mesh.name)
         
         SklFile.write(object, path.join(base_dir, chr.model))
 

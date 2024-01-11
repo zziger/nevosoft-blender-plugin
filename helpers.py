@@ -48,6 +48,20 @@ def duplicate(element: bpy.types.Object):
     bpy.ops.object.duplicate(linked=False)
     target = bpy.context.active_object
 
+def save_mat_texture(mat: bpy.types.Material, path):
+    found = False
+    if mat.use_nodes:
+        for node in mat.node_tree.nodes:
+            if isinstance(node, bpy.types.ShaderNodeBsdfPrincipled):
+                if len(node.inputs['Base Color'].links) > 0:
+                    link = node.inputs['Base Color'].links[0]
+                    if isinstance(link.from_node,
+                                    bpy.types.ShaderNodeTexImage) and link.from_node.image is not None:
+                        found = True
+                        link.from_node.image.save(filepath=path)
+
+    return found
+
 
 def compare_quat(q1: Quaternion, q2: Quaternion) -> bool:
     return math.isclose(abs(q1.dot(q2)), 1, rel_tol = 1e-12)
