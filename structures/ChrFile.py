@@ -38,10 +38,17 @@ class ChrFile:
         pass
         
     @staticmethod
+    def __decode(data: bytes) -> str:
+        str = data.decode("utf-8")
+        if '\x00' in str:
+            str = str[:str.index('\x00')]
+        return str
+
+    @staticmethod
     def read(filename: str) -> ChrFile:
         with open(filename, 'rb') as file:
-            model = file.read(32).decode("utf-8").rstrip('\x00')
-            texture = file.read(32).decode("utf-8").rstrip('\x00')
+            model = ChrFile.__decode(file.read(32))
+            texture = ChrFile.__decode(file.read(32))
             
             return ChrFile(model, texture)
         
