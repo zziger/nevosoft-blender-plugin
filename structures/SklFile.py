@@ -1,9 +1,11 @@
 from __future__ import annotations
+from os import path
 
 import struct
 from dataclasses import dataclass, field
 from math import floor
 
+from .. import logger
 import bmesh
 import bpy
 import bpy.types
@@ -14,6 +16,7 @@ from ..helpers import getBoneTag, findBoneByTag, set_active
 
 from .AnmFile import AnmFile
 
+magic = b'ZEGR'
 
 def notNullFilter(iter):
     return list(filter(lambda e: e != None, iter))
@@ -74,6 +77,10 @@ class SklBufVertex:
     index: int
     uvX: int
     uvY: int
+    
+@dataclass()
+class SklNsMeta:
+    vertices: list[Vector] | None = None
 
 
 class SklVertex:
@@ -93,6 +100,7 @@ class SklNs:
     vertLinks: list[SklNsVertexLink]
     indxFaces: list[SklFace]
     uvFaces: list[SklNsFaceUv]
+    meta: SklNsMeta
 
     def __init__(self):
         self.bones = []
@@ -100,6 +108,7 @@ class SklNs:
         self.vertLinks = []
         self.indxFaces = []
         self.uvFaces = []
+        self.meta = SklNsMeta()
 
     def write(self, filename):
         with open(filename, 'wb') as file:
@@ -141,6 +150,11 @@ class SklNs:
                 file.write(struct.pack('ff', *face.uv1.to_tuple()))
                 file.write(struct.pack('ff', *face.uv2.to_tuple()))
 
+            file.write(magic)
+            
+            if self.meta.vertices != None:
+                for vertex in self.meta.vertices:
+                    file.write(struct.pack('fff', *vertex.to_tuple()))
     
     def read(self, filename: str) -> None:
         with open(filename, 'rb') as file:
@@ -185,6 +199,18 @@ class SklNs:
                     Vector(struct.unpack('ff', file.read(2 * 4)))
                 ))
 
+            if file.tell() + len(magic) < path.getsize(filename):
+                logger.debug("Trying to read meta block")
+                if file.read(len(magic)) != magic:
+                    logger.warn("Invalid SKL meta block")
+                    return
+                
+                self.meta.vertices = []
+                for _ in range(numVerts):
+                    self.meta.vertices.append(Vector(struct.unpack('fff', file.read(3 * 4))))
+
+                print(self.meta.vertices)
+
 class SklFile:
     bones: list[SklBone]
     vertLinks: list[SklVertexLink]
@@ -192,6 +218,7 @@ class SklFile:
     indicesMapper: list[int]
     bufVerts: list[SklBufVertex]
     uvFaces: list[SklNsFaceUv]
+    meta: SklNsMeta
 
     animBones: list[AnimBone]
     anim: AnmFile
@@ -217,18 +244,26 @@ class SklFile:
             self.prepareBoneAnim(frame, child, ibone)
 
     def prepareBone(self, frame: int, ibone: int, pbone_index: int):
-        self.bones[ibone].pos += self.bones[pbone_index].pos
+        if ibone != 0:
+            self.bones[ibone].pos += self.bones[pbone_index].pos
 
         for child in self.bones[ibone].children:
             self.prepareBone(frame, child, ibone)
 
     def isComplex(self):
+        if self.meta.vertices != None:
+            return False
+        
         for i, vertLink in enumerate(self.vertLinks):
             if len(vertLink.links) > 1:
                 return True
         return False
     
     def simplify(self, anim):
+        if not self.isComplex():
+            logger.warn("Attempted to simplify non-complex model")
+            return
+        
         self.animBones = [None] * len(self.bones)
         self.anim = anim
 
@@ -294,9 +329,13 @@ class SklFile:
             linkedVert = SklLinkedVertex()
             linkedVert.xyz = Vector((0, 0, 0))
 
-            for link in vertLink.links:
-                bone = self.bones[link.indx]
-                linkedVert.xyz += (link.pos + bone.pos) * link.weight
+            if self.meta.vertices != None:
+                linkedVert.xyz = self.meta.vertices[i]
+            else:
+                for link in vertLink.links:
+                    bone = self.bones[link.indx]
+                    linkedVert.xyz += (link.pos + bone.pos) * link.weight
+                    break
 
             linkedVerts.append(linkedVert)
 
@@ -408,6 +447,7 @@ class SklFile:
                 skl.indicesMapper[indx] = nindx
             skl.bufVerts.append(key)
 
+        skl.meta = data.meta
         return skl
 
     @staticmethod
@@ -441,7 +481,7 @@ class SklFile:
         bpy.ops.object.mode_set(mode='EDIT')
         SklFile.prepareBoneWrite(armature, data, 0, 0)
 
-        obj = rig.children[0]
+        obj: bpy.types.Object = rig.children[0]
         bm: bmesh.types.BMesh = bmesh.new()
         deps_graph = bpy.context.evaluated_depsgraph_get()
         bm.from_object(obj, deps_graph)
@@ -463,6 +503,7 @@ class SklFile:
         
         
         data.vertLinks = [None] * len(bm.verts)
+        data.meta.vertices = [None] * len(bm.verts)
         for index, vertex in enumerate(bm.verts):
 
             vertex: bmesh.types.BMVert
@@ -473,12 +514,18 @@ class SklFile:
                 if weight == 0:
                     continue
 
-                bone: bpy.types.Bone = findBoneByTag(rig.data.edit_bones, group)
-                pos = vertex.co / weight - bone.head
-                ns_link.data.append(SklLink(weight, group, pos))
+                vertex_group = obj.vertex_groups[group]
+                bone: bpy.types.Bone = rig.data.edit_bones[vertex_group.name]
+                if bone is None:
+                    logger.warn("Bone not found: " + vertex_group.name)
+                    continue
 
-                break
+                tag = getBoneTag(rig.data.bones[vertex_group.name])
+                pos = vertex.co - bone.head
+                ns_link.data.append(SklLink(weight, tag, pos)),
+
             data.vertLinks[index] = ns_link
+            data.meta.vertices[index] = vertex.co
 
         data.write(filename)
         bpy.ops.object.mode_set(mode='OBJECT')
