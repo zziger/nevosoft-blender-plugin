@@ -57,4 +57,10 @@ ru_lang = {
     ('*', 'Only selected'): 'Только выделенные',
     ('*', 'Include selected objects only (instead of all objects in the scene)'): 'Включить только выделенные объекты (вместо всех объектов в сцене)',
     ('*', 'No available meshes found'): 'Не найдено доступных мешей',
+    ('*', 'Adds missing bone IDs to the armature. Enforces root bone ID to be 0'): 'Добавляет недостающие ID костей в арматурный объект. Принудительно устанавливает ID корневой кости в 0',
+    ('Operator', 'Fix bone IDs'): 'Исправить ID костей',
+    ('*', 'This will change bone IDs of the armature'): 'Это изменит ID костей арматурного объекта',
+    ('*', 'Animations that were exported with old IDs might behave incorrectly'): 'Анимации, экспортированные с использованием старых ID могут вести себя некорректно',
+    ('*', 'Failed to find an armature to fix bone IDs. Select armature in your 3D viewport and make sure it has a mesh child'): 'Не удалось найти арматурный объект для исправления ID костей. Выберите арматурный объект в 3D вьюпорте и убедитесь, что он имеет дочерний объект типа меш',
+    ('*', 'Multiple root bones found! Please ensure that your armature has only one root bone with ID 0'): 'Найдено несколько корневых костей! Пожалуйста, убедитесь, что ваш арматурный объект имеет только одну корневую кость с ID 0',
 }

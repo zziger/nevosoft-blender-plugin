@@ -468,15 +468,43 @@ class SklFile:
 
         for children in bone.children:
             SklFile.prepareBoneWrite(armature, data, getBoneTag(children), ibone)
+
+    @staticmethod
+    def ensureBoneIds(rig: bpy.types.Object):
+        armature: bpy.types.Armature = rig.data
+        
+        root_bones = list(filter(lambda e: e.parent == None, armature.bones))
+        if len(root_bones) > 1:
+            raise Exception("Multiple root bones found! Please ensure that your armature has only one root bone with ID 0")
+            
+        if getBoneTag(root_bones[0]) != 0:
+            raise Exception("Root bone must have ID 0")
+
+        for bone in armature.bones:
+            if getBoneTag(bone) < 0:
+                raise Exception("Bone " + bone.name + " has no ID")
+            
+        used = list()
+        for bone in armature.bones:
+            if getBoneTag(bone) in used:
+                raise Exception("Bone " + bone.name + " has duplicate ID " + str(getBoneTag(bone)))
+            used.append(getBoneTag(bone))
+            
+        for i in range(len(armature.bones)):
+            if findBoneByTag(armature.bones, i) == None:
+                raise Exception("Bone with ID " + str(i) + " not found")
     
     @staticmethod
     def write(rig: bpy.types.Object, filename):
+        SklFile.ensureBoneIds(rig)
+        
         data = SklNs()
 
         armature: bpy.types.Armature = rig.data
         data.boneVecs = [None] * len(armature.bones)
         data.bones = [None] * len(armature.bones)
 
+        bpy.ops.object.mode_set(mode='OBJECT')
         set_active(rig)
         bpy.ops.object.mode_set(mode='EDIT')
         SklFile.prepareBoneWrite(armature, data, 0, 0)

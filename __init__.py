@@ -1,3 +1,4 @@
+from .operators.FixBoneIDsOperator import FixBoneIDsOperator
 from .operators.ExportCharacterOperator import ExportCharacterOperator
 from .operators.ExportSkeletonOperator import ExportSkeletonOperator
 from .operators.ImportCharacterOperator import ImportCharacterOperator
@@ -63,6 +64,7 @@ def register():
     # Tools
     RetargetAnimationsOperator.load()
     RetargetModelOperator.load()
+    FixBoneIDsOperator.load()
 
 def unregister():
     logger.info("Unloading Nevosoft blender plugin")
@@ -86,6 +88,7 @@ def unregister():
     # Tools
     RetargetAnimationsOperator.unload()
     RetargetModelOperator.unload()
+    FixBoneIDsOperator.unload()
     
     ModelTools.unload()
     BoneProperties.unload()

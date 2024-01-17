@@ -20,7 +20,7 @@ class BoneProperties(bpy.types.Panel):
 
     @staticmethod
     def load():
-        bpy.types.EditBone.tag = bpy.props.IntProperty(name="Bone tag", description="amogus sus", default=-1, min=0)
+        bpy.types.EditBone.tag = bpy.props.IntProperty(name="Bone ID", default=-1, min=-1)
         bpy.utils.register_class(BoneProperties)
 
     @staticmethod
@@ -43,6 +43,9 @@ class ModelTools(bpy.types.Panel):
         layout.label(text="Replace model rest pose:")
         layout.operator("nevosoft.retarget_animations")
         layout.operator("nevosoft.retarget_model")
+
+        layout.label(text="Bone utils:")
+        layout.operator("nevosoft.fix_bone_ids")
 
     @staticmethod
     def load():
