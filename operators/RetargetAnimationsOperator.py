@@ -15,8 +15,8 @@ from ..logger import operator_logger
 
 
 class RetargetAnimationsOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
-    """Retarget selected Nevosoft Animation files onto a new rest pose. Current armature pose will be used as a new rest pose for the animations."""
-    
+    """Retarget selected Nevosoft Animation files onto a new rest pose. Current armature pose will be used as a new rest pose for the animations"""
+
     bl_idname = "nevosoft.retarget_animations"
     bl_label = "Retarget animations"
     bl_action = "import"
