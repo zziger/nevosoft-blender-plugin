@@ -9,7 +9,7 @@ from ..settings import get_preferences
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG, REFERENCE_BONE, TEMP_BONE
 from ..logger import logger
 from mathutils import Quaternion, Vector, Euler, Matrix
-from ..helpers import compare_quat, getBoneTag, set_active
+from ..helpers import compare_quat, findBoneByTag, getBoneTag, set_active
 
 class AnmFile:
     bones: int
@@ -239,8 +239,8 @@ class AnmFile:
                 frame_id = f - start_frame
                 logger.info('Creating animation frame %d', frame_id)
                 
-                movements.append(Vector(obj.location))
-                print('frame', obj.location, len(movements))
+                movements.append(Vector(obj.matrix_world @ obj.pose.bones[findBoneByTag(armature.bones, 0).name].head))
+
                 bone_rotations[frame_id] = [Vector((0, 0, 0)) for _ in range(bone_count)]
                 for bone_index in range(len(obj.pose.bones)):
                     pose_bone = obj.pose.bones[bone_index]

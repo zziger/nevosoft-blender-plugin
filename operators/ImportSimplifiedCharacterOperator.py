@@ -31,7 +31,7 @@ Simplification process requires a valid animation file to be selected"""
     load_at_0z: bpy.props.BoolProperty(
         name="Load at height 0",
         description="Move character's root bone to height 0",
-        default=False,
+        default=True,
     )
 
     apply_anim: bpy.props.BoolProperty(
