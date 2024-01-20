@@ -20,7 +20,8 @@ bl_info = {
 autoload.init()
 
 def register():
-    logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, bl_info["version"])))
+    version = "verison" in bl_info and bl_info["version"] or (0, 0, 0)
+    logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, version)))
 
     bpy.utils.register_class(PluginPreferences)
     set_debug(get_preferences().debug)
