@@ -1,14 +1,14 @@
 import bpy
 from bpy.types import Operator, AddonPreferences
+from .constants import PACKAGE_NAME
 from . import logger
-from .autoload import ignore_autoload
 
 def on_debug_update(self, context):
     logger.set_debug(self.debug)
 
-@ignore_autoload
 class PluginPreferences(AddonPreferences):
-    bl_idname = __package__
+    ignore_autoload = True
+    bl_idname = PACKAGE_NAME
     update_handlers = list()
 
     debug: bpy.props.BoolProperty(
@@ -25,4 +25,4 @@ class PluginPreferences(AddonPreferences):
         layout.prop(self, "debug")
 
 def get_preferences(context = bpy.context) -> PluginPreferences:
-    return context.preferences.addons[__package__].preferences
+    return context.preferences.addons[PACKAGE_NAME].preferences

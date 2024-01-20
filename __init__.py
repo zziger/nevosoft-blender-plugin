@@ -1,11 +1,9 @@
 import bpy
 
-from .settings import get_preferences, PluginPreferences
-from .logger import logger, set_debug
-from .lang.ru import ru_lang
+from .src.settings import get_preferences, PluginPreferences
+from .src.logger import logger, set_debug
+from .src.lang.ru import ru_lang
 from . import autoload
-
-from .extensions import BoneProperties, ModelTools
 
 bl_info = {
     "name": "Nevosoft Model Formats (.cgo, .msh, .skl, .chr, .anm)",
@@ -25,6 +23,7 @@ autoload.init()
 def register():
     logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, bl_info["version"])))
 
+    print("%s", PluginPreferences)
     bpy.utils.register_class(PluginPreferences)
     set_debug(get_preferences().debug)
 

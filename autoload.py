@@ -7,8 +7,7 @@ import pkgutil
 import importlib
 from pathlib import Path
 
-from .settings import get_preferences
-from .logger import logger
+from .src.logger import logger
 
 __all__ = (
     "init",
@@ -29,8 +28,6 @@ def init():
     ordered_classes = get_ordered_classes_to_register(modules)
 
 def register():
-    debug = get_preferences().debug
-
     for cls in ordered_classes:
         logger.debug("Registering class %s", cls)
         bpy.utils.register_class(cls)
@@ -53,10 +50,6 @@ def unregister():
         if hasattr(module, "unregister"):
             logger.debug("Unregistering module %s", module)
             module.unregister()
-
-
-def ignore_autoload(cls):
-    setattr(cls, "ignore_autoload", True)
 
 
 # Import modules

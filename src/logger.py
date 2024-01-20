@@ -1,9 +1,10 @@
 import contextlib
 import logging
 import bpy
+from .constants import PACKAGE_NAME
 
 formatter = logging.Formatter('%(asctime)-15s NevosoftPlugin %(levelname)7s: %(message)s')
-logger = logging.getLogger(__package__)
+logger = logging.getLogger(PACKAGE_NAME)
 logger.setLevel(logging.DEBUG)
 
 stream_handler = logging.StreamHandler()
