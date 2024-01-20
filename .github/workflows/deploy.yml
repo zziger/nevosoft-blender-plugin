@@ -1,0 +1,62 @@
+on:
+    push:
+        tags:
+            - 'v*.*'
+            - 'v*.*.*'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository code
+              uses: actions/checkout@v4
+
+            - name: Parse build version
+              id: parse_version
+              uses: battila7/get-version-action@v2
+
+            - name: Check if version is valid
+              run: |
+                if [ "${{ !!steps.parse_version.outputs.is-semver }}" = "false" ]; then
+                  echo "::error::Invalid version: ${{ github.ref }}"
+                  exit 1
+                fi
+
+            - name: Update stable version in __init__.py
+              if: ${{ !steps.parse_version.outputs.prerelease }}
+              run: |
+                sed -i 's/"warning": ".*"/"version": (${{steps.parse_version.outputs.major}}, ${{steps.parse_version.outputs.minor}}, ${{steps.parse_version.outputs.patch}})/g' __init__.py
+
+            - name: Update prerelease version in __init__.py
+              if: ${{ steps.parse_version.outputs.prerelease }}
+              run: |
+                sed -i 's/"warning": ".*"/"warning": "This is a pre-release plugin version",\n    "version": (${{steps.parse_version.outputs.major}}, ${{steps.parse_version.outputs.minor}}, ${{steps.parse_version.outputs.patch}}, "${{steps.parse_version.outputs.prerelease}}")/g' __init__.py
+
+            - name: Test
+              run: cat __init__.py
+
+            - name: Pack plugin files
+              run: |
+                mkdir nevosoft-blender-plugin
+                cp -r __init__.py autoload.py src LICENSE nevosoft-blender-plugin
+                zip -r plugin.zip nevosoft-blender-plugin
+                rm -rf nevosoft-blender-plugin
+
+            - name: Read release body
+              id: read_release_body
+              uses: juliangruber/read-file-action@v1
+              with:
+                path: ./RELEASE_BODY.md
+
+            - name: Create release
+              uses: softprops/action-gh-release@v0.1.15
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                tag_name: ${{ steps.parse_version.outputs.version }}
+                name: Version ${{ steps.parse_version.outputs.version-without-v }}
+                prerelease: ${{ !!steps.parse_version.outputs.prerelease }}
+                generate_release_notes: true
+                body: ${{ steps.read_release_body.outputs.content }}
+                files: |
+                  plugin.zip
