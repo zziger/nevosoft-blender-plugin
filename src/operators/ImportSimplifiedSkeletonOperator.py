@@ -23,7 +23,7 @@ Simplification process requires a valid animation file to be selected"""
     bl_update_view = True
 
     filter_glob: bpy.props.StringProperty(
-        default='*.anm',
+        default='*.skl',
         options={'HIDDEN'}
     )
 

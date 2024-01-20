@@ -21,6 +21,11 @@ Armature must have one mesh child, animation data includes bone rotations and ar
     bl_update_view = True
     check_extension = True
     filename_ext = ".anm"
+
+    filter_glob: bpy.props.StringProperty(
+        default='*.anm',
+        options={'HIDDEN'}
+    )
     
     @classmethod
     def poll(cls, context):

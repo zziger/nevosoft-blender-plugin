@@ -19,6 +19,11 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
     check_extension = True
     filename_ext = ".msh"
 
+    filter_glob: bpy.props.StringProperty(
+        default='*.msh',
+        options={'HIDDEN'}
+    )
+
     @staticmethod
     def find_mesh():
         for obj in bpy.context.selected_objects:

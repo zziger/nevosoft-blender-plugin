@@ -24,6 +24,11 @@ Armature must have one mesh child. Output character includes model, armature and
     check_extension = True
     filename_ext = ".chr"
 
+    filter_glob: bpy.props.StringProperty(
+        default='*.chr',
+        options={'HIDDEN'}
+    )
+
     texture_name: StringProperty(
         name="Texture name",
         description="Name for texture file",
@@ -49,30 +54,6 @@ Armature must have one mesh child. Output character includes model, armature and
             return {'FINISHED'}
     
     def draw(self, context):
-        pass
-
-
-class CUSTOM_PT_character_export_settings(Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Export settings"
-
-    @classmethod
-    def poll(cls, context):
-        if not isinstance(context.space_data, bpy.types.SpaceFileBrowser):
-            return False
-
-        operator = context.space_data.active_operator
-        return operator.bl_idname == "NEVOSOFT_OT_export_character"
-
-    def draw(self, context):
         layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-
-        if not isinstance(context.space_data, bpy.types.SpaceFileBrowser):
-            return
-
         operator = context.space_data.active_operator
         layout.prop(operator, 'texture_name')
-        layout.prop(operator, 'bake_materials')

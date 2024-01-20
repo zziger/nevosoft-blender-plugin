@@ -20,6 +20,11 @@ Armature must have one mesh child. Output skeleton includes only model and armat
     check_extension = True
     filename_ext = ".skl"
 
+    filter_glob: bpy.props.StringProperty(
+        default='*.skl',
+        options={'HIDDEN'}
+    )
+
     @staticmethod
     def find_armature():
         for obj in bpy.context.selected_objects:

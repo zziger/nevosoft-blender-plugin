@@ -44,29 +44,6 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
             return {'FINISHED'}
 
     def draw(self, context):
-        pass
-
-
-class CUSTOM_PT_object_import_settings(Panel):
-    bl_space_type = 'FILE_BROWSER'
-    bl_region_type = 'TOOL_PROPS'
-    bl_label = "Import settings"
-
-    @classmethod
-    def poll(cls, context):
-        if not isinstance(context.space_data, bpy.types.SpaceFileBrowser):
-            return False
-
-        operator = context.space_data.active_operator
-        return operator.bl_idname == "NEVOSOFT_OT_import_object"
-
-    def draw(self, context):
         layout = self.layout
-        layout.use_property_split = True
-        layout.use_property_decorate = False
-
-        if not isinstance(context.space_data, bpy.types.SpaceFileBrowser):
-            return
-
         operator = context.space_data.active_operator
         layout.prop(operator, 'clear_scene')
