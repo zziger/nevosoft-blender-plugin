@@ -48,11 +48,3 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
                 traceback.print_exception(e)
 
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ImportCharacterOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ImportCharacterOperator)

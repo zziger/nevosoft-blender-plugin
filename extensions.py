@@ -18,16 +18,6 @@ class BoneProperties(bpy.types.Panel):
         row = layout.row()
         row.prop(bone, "tag")
 
-    @staticmethod
-    def load():
-        bpy.types.EditBone.tag = bpy.props.IntProperty(name="Bone ID", default=-1, min=-1)
-        bpy.utils.register_class(BoneProperties)
-
-    @staticmethod
-    def unload():
-        del bpy.types.EditBone.tag
-        bpy.utils.unregister_class(BoneProperties)
-
 
 class ModelTools(bpy.types.Panel):
     bl_idname = 'OBJECT_PT_nevosoft_tools'
@@ -46,11 +36,3 @@ class ModelTools(bpy.types.Panel):
 
         layout.label(text="Bone utils:")
         layout.operator("nevosoft.fix_bone_ids")
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ModelTools)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ModelTools)

@@ -58,11 +58,3 @@ Armature must have one mesh child"""
                 traceback.print_exception(e)
 
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ImportAnimationOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ImportAnimationOperator)

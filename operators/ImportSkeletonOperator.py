@@ -48,11 +48,3 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
                 self.error(str(e))
                 traceback.print_exception(e)
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ImportSkeletonOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ImportSkeletonOperator)

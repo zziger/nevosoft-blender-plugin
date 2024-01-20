@@ -81,11 +81,3 @@ Simplification process requires a valid animation file to be selected"""
                 self.error(str(e))
                 traceback.print_exception(e)
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ImportSimplifiedCharacterOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ImportSimplifiedCharacterOperator)

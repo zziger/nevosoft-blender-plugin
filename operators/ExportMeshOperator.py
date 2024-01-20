@@ -44,11 +44,4 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
                 traceback.print_exception(e)
 
         return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ExportMeshOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ExportMeshOperator)
+    

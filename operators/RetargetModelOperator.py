@@ -15,6 +15,7 @@ from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
 from ..logger import operator_logger
 
+
 class RetargetModelOperator(bpy.types.Operator, OperatorBase):
     """Change model rest pose to the current pose and retarget current animation"""
 
@@ -86,11 +87,3 @@ class RetargetModelOperator(bpy.types.Operator, OperatorBase):
                 anm.create(obj)
             
             return {'FINISHED'}
-        
-    @staticmethod
-    def load():
-        bpy.utils.register_class(RetargetModelOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(RetargetModelOperator)

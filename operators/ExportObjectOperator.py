@@ -55,16 +55,6 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     def draw(self, context):
         pass
 
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ExportObjectOperator)
-        bpy.utils.register_class(CUSTOM_PT_object_export_settings)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ExportObjectOperator)
-        bpy.utils.unregister_class(CUSTOM_PT_object_export_settings)
-
 
 class CUSTOM_PT_object_export_settings(Panel):
     bl_space_type = 'FILE_BROWSER'

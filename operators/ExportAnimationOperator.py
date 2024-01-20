@@ -43,11 +43,4 @@ Armature must have one mesh child, animation data includes bone rotations and ar
                 traceback.print_exception(e)
 
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ExportAnimationOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ExportAnimationOperator)
+        

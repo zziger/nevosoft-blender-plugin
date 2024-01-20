@@ -15,6 +15,7 @@ from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
 from ..logger import operator_logger
 
+
 class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
     """Adds missing bone IDs to the armature. Enforces root bone ID to be 0"""
 
@@ -86,10 +87,3 @@ class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
             
             return {'FINISHED'}
         
-    @staticmethod
-    def load():
-        bpy.utils.register_class(FixBoneIDsOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(FixBoneIDsOperator)

@@ -32,11 +32,3 @@ class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.I
                 traceback.print_exception(e)
 
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ImportMeshOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ImportMeshOperator)

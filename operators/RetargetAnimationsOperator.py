@@ -82,11 +82,3 @@ class RetargetAnimationsOperator(bpy.types.Operator, OperatorBase, bpy_extras.io
 
             self.message("Finished retargetting animations") 
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(RetargetAnimationsOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(RetargetAnimationsOperator)

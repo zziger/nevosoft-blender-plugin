@@ -1,10 +1,12 @@
 import bpy
 from bpy.types import Operator, AddonPreferences
 from . import logger
+from .autoload import ignore_autoload
 
 def on_debug_update(self, context):
     logger.set_debug(self.debug)
 
+@ignore_autoload
 class PluginPreferences(AddonPreferences):
     bl_idname = __package__
     update_handlers = list()
@@ -21,14 +23,6 @@ class PluginPreferences(AddonPreferences):
         layout = self.layout
         # layout.label(text="This is a preferences view for our addon")
         layout.prop(self, "debug")
-
-    def load():
-        bpy.utils.register_class(PluginPreferences)
-        logger.set_debug(get_preferences().debug)
-
-    def unload():
-        bpy.utils.unregister_class(PluginPreferences)
-
 
 def get_preferences(context = bpy.context) -> PluginPreferences:
     return context.preferences.addons[__package__].preferences

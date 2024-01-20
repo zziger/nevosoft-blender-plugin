@@ -48,11 +48,3 @@ Armature must have one mesh child. Output skeleton includes only model and armat
                 traceback.print_exception(e)
 
             return {'FINISHED'}
-
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ExportSkeletonOperator)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ExportSkeletonOperator)

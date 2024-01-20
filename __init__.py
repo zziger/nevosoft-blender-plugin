@@ -1,25 +1,9 @@
 import bpy
 
-from .operators.FixBoneIDsOperator import FixBoneIDsOperator
-from .operators.ExportCharacterOperator import ExportCharacterOperator
-from .operators.ExportSkeletonOperator import ExportSkeletonOperator
-from .operators.ImportCharacterOperator import ImportCharacterOperator
-from .operators.ImportSimplifiedCharacterOperator import ImportSimplifiedCharacterOperator
-from .operators.ImportAnimationOperator import ImportAnimationOperator
-from .operators.ExportAnimationOperator import ExportAnimationOperator
-from .operators.ExportMeshOperator import ExportMeshOperator
-from .operators.ExportObjectOperator import ExportObjectOperator
-from .operators.ImportMeshOperator import ImportMeshOperator
-from .operators.ImportObjectOperator import ImportObjectOperator
-from .operators.ImportSkeletonOperator import ImportSkeletonOperator
-from .operators.ImportSimplifiedSkeletonOperator import ImportSimplifiedSkeletonOperator
-from .operators.RetargetAnimationsOperator import RetargetAnimationsOperator
-from .operators.RetargetModelOperator import RetargetModelOperator
-from .menus import FileExportMenu
-from .menus import FileImportMenu
-from .settings import PluginPreferences
-from .logger import logger
+from .settings import get_preferences, PluginPreferences
+from .logger import logger, set_debug
 from .lang.ru import ru_lang
+from . import autoload
 
 from .extensions import BoneProperties, ModelTools
 
@@ -36,69 +20,24 @@ bl_info = {
     "category": "Import-Export",
 }
 
+autoload.init()
 
 def register():
     logger.info("Loading Nevosoft blender plugin v%s", '.'.join(map(str, bl_info["version"])))
+
+    bpy.utils.register_class(PluginPreferences)
+    set_debug(get_preferences().debug)
 
     bpy.app.translations.register(__name__, {
         'ru': ru_lang
     })
 
-    PluginPreferences.load()
-    BoneProperties.load()
-    ModelTools.load()
-
-    # Import
-    ImportObjectOperator.load()
-    ImportMeshOperator.load()
-    ImportCharacterOperator.load()
-    ImportSkeletonOperator.load()
-    ImportAnimationOperator.load()
-    ImportSimplifiedCharacterOperator.load()
-    ImportSimplifiedSkeletonOperator.load()
-
-    # Export
-    ExportObjectOperator.load()
-    ExportMeshOperator.load()
-    ExportCharacterOperator.load()
-    ExportSkeletonOperator.load()
-    ExportAnimationOperator.load()
-
-    # Tools
-    RetargetAnimationsOperator.load()
-    RetargetModelOperator.load()
-    FixBoneIDsOperator.load()
-    FileExportMenu.register()
-    FileImportMenu.register()
+    autoload.register()
 
 def unregister():
     logger.info("Unloading Nevosoft blender plugin")
     
-    # Import
-    ImportObjectOperator.unload()
-    ImportMeshOperator.unload()
-    ImportCharacterOperator.unload()
-    ImportSkeletonOperator.unload()
-    ImportAnimationOperator.unload()
-    ImportSimplifiedCharacterOperator.unload()
-    ImportSimplifiedSkeletonOperator.unload()
-
-    # Export
-    ExportObjectOperator.unload()
-    ExportMeshOperator.unload()
-    ExportCharacterOperator.unload()
-    ExportSkeletonOperator.unload()
-    ExportAnimationOperator.unload()
-
-    # Tools
-    RetargetAnimationsOperator.unload()
-    RetargetModelOperator.unload()
-    FixBoneIDsOperator.unload()
-    
-    ModelTools.unload()
-    BoneProperties.unload()
-    PluginPreferences.unload()
-    FileExportMenu.unregister()
-    FileImportMenu.unregister()
+    autoload.unregister()
 
     bpy.app.translations.unregister(__name__)
+    bpy.utils.unregister_class(PluginPreferences)

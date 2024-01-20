@@ -46,16 +46,6 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     def draw(self, context):
         pass
 
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ImportObjectOperator)
-        bpy.utils.register_class(CUSTOM_PT_object_import_settings)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ImportObjectOperator)
-        bpy.utils.unregister_class(CUSTOM_PT_object_import_settings)
-
 
 class CUSTOM_PT_object_import_settings(Panel):
     bl_space_type = 'FILE_BROWSER'

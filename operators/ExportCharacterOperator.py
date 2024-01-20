@@ -56,16 +56,6 @@ Armature must have one mesh child. Output character includes model, armature and
     def draw(self, context):
         pass
 
-    @staticmethod
-    def load():
-        bpy.utils.register_class(ExportCharacterOperator)
-        bpy.utils.register_class(CUSTOM_PT_character_export_settings)
-
-    @staticmethod
-    def unload():
-        bpy.utils.unregister_class(ExportCharacterOperator)
-        bpy.utils.unregister_class(CUSTOM_PT_character_export_settings)
-
 
 class CUSTOM_PT_character_export_settings(Panel):
     bl_space_type = 'FILE_BROWSER'
