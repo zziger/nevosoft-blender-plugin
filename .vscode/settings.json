@@ -4,5 +4,12 @@
     ],
     "python.analysis.extraPaths": [
         "./.vscode/fake_bpy_modules"
-    ]
+    ],
+    "files.exclude": {
+        "**/._*": true,
+        "**/.DS_Store": true,
+        "**/.git": true,
+        "**/__pycache__": true,
+        "**/*.pyc": {"when": "$(basename).py"},
+    }
 }
