@@ -1,0 +1,8 @@
+{
+    "python.autoComplete.extraPaths": [
+        "./.vscode/fake_bpy_modules"
+    ],
+    "python.analysis.extraPaths": [
+        "./.vscode/fake_bpy_modules"
+    ]
+}
