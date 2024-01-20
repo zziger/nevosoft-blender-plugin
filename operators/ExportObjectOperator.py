@@ -59,13 +59,11 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     def load():
         bpy.utils.register_class(ExportObjectOperator)
         bpy.utils.register_class(CUSTOM_PT_object_export_settings)
-        bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ExportObjectOperator)
         bpy.utils.unregister_class(CUSTOM_PT_object_export_settings)
-        bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 
 class CUSTOM_PT_object_export_settings(Panel):
@@ -92,7 +90,3 @@ class CUSTOM_PT_object_export_settings(Panel):
         operator = context.space_data.active_operator
         layout.prop(operator, 'bake_materials')
         layout.prop(operator, 'only_selected')
-
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportObjectOperator.bl_idname, text=ExportObjectOperator.bl_label, icon="MESH_CUBE")

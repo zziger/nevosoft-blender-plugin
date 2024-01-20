@@ -48,13 +48,7 @@ class ExportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.E
     @staticmethod
     def load():
         bpy.utils.register_class(ExportMeshOperator)
-        bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ExportMeshOperator)
-        bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportMeshOperator.bl_idname, text=ExportMeshOperator.bl_label, icon="MESH_DATA")

@@ -62,13 +62,7 @@ Armature must have one mesh child"""
     @staticmethod
     def load():
         bpy.utils.register_class(ImportAnimationOperator)
-        bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ImportAnimationOperator)
-        bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-
-
-def menu_func_import(self, context):
-    self.layout.operator(ImportAnimationOperator.bl_idname, text=ImportAnimationOperator.bl_label, icon="ANIM")

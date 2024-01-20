@@ -52,13 +52,7 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
     @staticmethod
     def load():
         bpy.utils.register_class(ImportCharacterOperator)
-        bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ImportCharacterOperator)
-        bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-
-
-def menu_func_import(self, context):
-    self.layout.operator(ImportCharacterOperator.bl_idname, text=ImportCharacterOperator.bl_label, icon="OUTLINER_OB_ARMATURE")

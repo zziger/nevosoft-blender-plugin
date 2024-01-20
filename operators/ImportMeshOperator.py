@@ -36,13 +36,7 @@ class ImportMeshOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.I
     @staticmethod
     def load():
         bpy.utils.register_class(ImportMeshOperator)
-        bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ImportMeshOperator)
-        bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
-
-
-def menu_func_import(self, context):
-    self.layout.operator(ImportMeshOperator.bl_idname, text=ImportMeshOperator.bl_label, icon="MESH_DATA")

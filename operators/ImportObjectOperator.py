@@ -50,13 +50,11 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     def load():
         bpy.utils.register_class(ImportObjectOperator)
         bpy.utils.register_class(CUSTOM_PT_object_import_settings)
-        bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ImportObjectOperator)
         bpy.utils.unregister_class(CUSTOM_PT_object_import_settings)
-        bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 
 class CUSTOM_PT_object_import_settings(Panel):
@@ -82,7 +80,3 @@ class CUSTOM_PT_object_import_settings(Panel):
 
         operator = context.space_data.active_operator
         layout.prop(operator, 'clear_scene')
-
-
-def menu_func_import(self, context):
-    self.layout.operator(ImportObjectOperator.bl_idname, text=ImportObjectOperator.bl_label, icon="MESH_CUBE")

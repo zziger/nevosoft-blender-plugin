@@ -52,13 +52,7 @@ Armature must have one mesh child. Output skeleton includes only model and armat
     @staticmethod
     def load():
         bpy.utils.register_class(ExportSkeletonOperator)
-        bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ExportSkeletonOperator)
-        bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportSkeletonOperator.bl_idname, text=ExportSkeletonOperator.bl_label, icon="ARMATURE_DATA")

@@ -1,3 +1,5 @@
+import bpy
+
 from .operators.FixBoneIDsOperator import FixBoneIDsOperator
 from .operators.ExportCharacterOperator import ExportCharacterOperator
 from .operators.ExportSkeletonOperator import ExportSkeletonOperator
@@ -13,9 +15,10 @@ from .operators.ImportSkeletonOperator import ImportSkeletonOperator
 from .operators.ImportSimplifiedSkeletonOperator import ImportSimplifiedSkeletonOperator
 from .operators.RetargetAnimationsOperator import RetargetAnimationsOperator
 from .operators.RetargetModelOperator import RetargetModelOperator
+from .menus import FileExportMenu
+from .menus import FileImportMenu
 from .settings import PluginPreferences
 from .logger import logger
-import bpy
 from .lang.ru import ru_lang
 
 from .extensions import BoneProperties, ModelTools
@@ -65,6 +68,8 @@ def register():
     RetargetAnimationsOperator.load()
     RetargetModelOperator.load()
     FixBoneIDsOperator.load()
+    FileExportMenu.register()
+    FileImportMenu.register()
 
 def unregister():
     logger.info("Unloading Nevosoft blender plugin")
@@ -93,5 +98,7 @@ def unregister():
     ModelTools.unload()
     BoneProperties.unload()
     PluginPreferences.unload()
+    FileExportMenu.unregister()
+    FileImportMenu.unregister()
 
     bpy.app.translations.unregister(__name__)

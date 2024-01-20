@@ -47,13 +47,7 @@ Armature must have one mesh child, animation data includes bone rotations and ar
     @staticmethod
     def load():
         bpy.utils.register_class(ExportAnimationOperator)
-        bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ExportAnimationOperator)
-        bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
-
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportAnimationOperator.bl_idname, text=ExportAnimationOperator.bl_label, icon="ANIM")

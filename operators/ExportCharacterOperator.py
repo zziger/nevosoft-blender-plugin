@@ -60,13 +60,11 @@ Armature must have one mesh child. Output character includes model, armature and
     def load():
         bpy.utils.register_class(ExportCharacterOperator)
         bpy.utils.register_class(CUSTOM_PT_character_export_settings)
-        bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
     @staticmethod
     def unload():
         bpy.utils.unregister_class(ExportCharacterOperator)
         bpy.utils.unregister_class(CUSTOM_PT_character_export_settings)
-        bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 
 class CUSTOM_PT_character_export_settings(Panel):
@@ -93,7 +91,3 @@ class CUSTOM_PT_character_export_settings(Panel):
         operator = context.space_data.active_operator
         layout.prop(operator, 'texture_name')
         layout.prop(operator, 'bake_materials')
-
-
-def menu_func_export(self, context):
-    self.layout.operator(ExportCharacterOperator.bl_idname, text=ExportCharacterOperator.bl_label, icon="OUTLINER_OB_ARMATURE")
