@@ -5,7 +5,7 @@ import struct
 from dataclasses import dataclass, field
 from math import floor
 
-from .. import logger
+from ..logger import logger
 import bmesh
 import bpy
 import bpy.types
