@@ -1,3 +1,6 @@
+name: Release plugin version
+run-name: Release plugin ${{ github.ref }}
+
 on:
     push:
         tags:
@@ -39,7 +42,7 @@ jobs:
               run: |
                 mkdir nevosoft-blender-plugin
                 cp -r __init__.py autoload.py src LICENSE nevosoft-blender-plugin
-                zip -r plugin.zip nevosoft-blender-plugin
+                zip -r nevosoft-blender-plugin.zip nevosoft-blender-plugin
                 rm -rf nevosoft-blender-plugin
 
             - name: Read release body
@@ -59,4 +62,4 @@ jobs:
                 generate_release_notes: true
                 body: ${{ steps.read_release_body.outputs.content }}
                 files: |
-                  plugin.zip
+                  nevosoft-blender-plugin.zip
