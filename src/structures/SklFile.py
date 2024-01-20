@@ -5,13 +5,14 @@ import struct
 from dataclasses import dataclass, field
 from math import floor
 
+from ..settings.ImportSkeletonSettings import ImportSkeletonSettings
 from ..logger import logger
 import bmesh
 import bpy
 import bpy.types
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG
 from mathutils import Vector, Matrix, Quaternion
-from ..settings import get_preferences
+from ..preferences import get_preferences
 from ..helpers import getBoneTag, findBoneByTag, set_active
 
 from .AnmFile import AnmFile
@@ -295,16 +296,13 @@ class SklFile:
                 SklLink(1, indx, (linkedVert.xyz - bone.pos) @ bone.mat.to_4x4())
             ]
 
-    def moveTo0z(self):
-        self.bones[0].pos = Vector((0, 0, 0))
-
-    def create(self, name: str, off: Vector, image=None) -> bpy.types.Object:
-        # self.animBones = [None] * len(self.bones)
-        # self.anim = anim
-
+    def create(self, name: str, image=None, skl_settings: ImportSkeletonSettings = ImportSkeletonSettings()) -> bpy.types.Object:
         scn = bpy.context.scene
         if scn == None:
             raise Exception("No scene to import to!")
+        
+        if skl_settings.load_at_0z:
+            self.bones[0].pos = Vector((0, 0, 0))
 
         # creating material
         mat = bpy.data.materials.new(name="material")  # todo name

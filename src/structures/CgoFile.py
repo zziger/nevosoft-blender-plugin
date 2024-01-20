@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from os import path
 
 import bpy
+from ..settings.BakeSettings import BakeSettings
 from ..helpers import save_mat_texture
 
 from .MshFile import MshFile
@@ -57,7 +58,7 @@ class CgoFile:
             return CgoFile(meshes, path.dirname(filename))
 
     @staticmethod
-    def write(filename: str, objects: list[bpy.types.Object], bake: bool = False) -> None:
+    def write(filename: str, objects: list[bpy.types.Object], bake_settings: BakeSettings) -> None:
         meshes: list[bpy.types.Object] = list(filter(lambda e: isinstance(e.data, bpy.types.Mesh), objects))
 
         if len(meshes) == 0:
@@ -77,7 +78,7 @@ class CgoFile:
             mesh_path = f"{name}{index}.msh"
             texture_path = f"{name}{index}.jpg"
 
-            if bake:
+            if bake_settings.bake_materials:
                 MshFile.write(mesh, path.join(base_dir, mesh_path), path.join(base_dir, texture_path))
             else:
                 MshFile.write(mesh, path.join(base_dir, mesh_path))

@@ -5,7 +5,7 @@ from math import cos, sin, floor, pi
 from pathlib import Path
 
 import bpy
-from ..settings import get_preferences
+from ..preferences import get_preferences
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG, REFERENCE_BONE, TEMP_BONE
 from ..logger import logger
 from mathutils import Quaternion, Vector, Euler, Matrix

@@ -5,11 +5,12 @@ import bpy_extras
 from bpy.props import BoolProperty
 from bpy.types import Panel
 
+from ..settings.BakeSettings import BakeSettings
 from ..helpers import OperatorBase
 from ..structures.CgoFile import CgoFile
 from ..logger import operator_logger
 
-class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper, BakeSettings):
     """Export Nevosoft Object file from current scene"""
 
     bl_idname = "nevosoft.export_object"
@@ -19,12 +20,6 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     bl_update_view = True
     check_extension = True
     filename_ext = ".cgo"
-
-    bake_materials: BoolProperty(
-        name="Bake materials",
-        description="Bake materials instead of searching for texture",
-        default=False,
-    )
 
     only_selected: BoolProperty(
         name="Only selected",
@@ -45,7 +40,8 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
                 if len(bpy.context.scene.objects) == 0:
                     raise Exception("No objects found in the scene")
 
-                CgoFile.write(self.filepath, bpy.context.selected_objects if self.only_selected else bpy.context.scene.objects, bake=self.bake_materials)
+                objects = bpy.context.selected_objects if self.only_selected else bpy.context.scene.objects
+                CgoFile.write(self.filepath, objects, self)
             except Exception as e:
                 self.error(str(e))
                 traceback.print_exception(e)

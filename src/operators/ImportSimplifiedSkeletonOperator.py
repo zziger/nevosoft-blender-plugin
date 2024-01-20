@@ -4,6 +4,7 @@ import traceback
 import bpy
 import bpy_extras
 
+from ..settings.ImportSkeletonSettings import ImportSkeletonSettings
 from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
@@ -11,7 +12,7 @@ from ..structures.AnmFile import AnmFile
 from ..logger import operator_logger
 
 
-class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+class ImportSimplifiedSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper, ImportSkeletonSettings):
     """Simplify and import Nevosoft Skeleton file into current scene.
 Simplification process requires a valid animation file to be selected"""
 
@@ -24,12 +25,6 @@ Simplification process requires a valid animation file to be selected"""
     filter_glob: bpy.props.StringProperty(
         default='*.anm',
         options={'HIDDEN'}
-    )
-
-    load_at_0z: bpy.props.BoolProperty(
-        name="Load at height 0",
-        description="Move character's root bone to height 0",
-        default=True,
     )
 
     apply_anim: bpy.props.BoolProperty(
@@ -72,9 +67,7 @@ Simplification process requires a valid animation file to be selected"""
                 anm = AnmFile.read(self.filepath)
                 skl = SklFile.read(self.skl_filepath)
                 skl.simplify(anm)
-                if self.load_at_0z:
-                    skl.moveTo0z()
-                obj = skl.create(Path(self.skl_filepath).stem, (0, 0, 0), None)
+                obj = skl.create(Path(self.skl_filepath).stem, None, self)
                 if self.apply_anim:
                     anm.create(obj.parent)
             except Exception as e:

@@ -1,6 +1,6 @@
 import bpy
 
-from .src.settings import get_preferences, PluginPreferences
+from .src.preferences import get_preferences, PluginPreferences
 from .src.logger import logger, set_debug
 from .src.lang.ru import ru_lang
 from . import autoload

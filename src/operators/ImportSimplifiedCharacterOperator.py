@@ -4,7 +4,7 @@ import traceback
 import bpy
 import bpy_extras
 
-
+from ..settings.ImportSkeletonSettings import ImportSkeletonSettings
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
 from ..structures.MshFile import MshFile
@@ -13,7 +13,7 @@ from ..structures.AnmFile import AnmFile
 from ..logger import operator_logger
 
 
-class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+class ImportSimplifiedCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper, ImportSkeletonSettings):
     """Simplify and import Nevosoft Character file into current scene.
 Simplification process requires a valid animation file to be selected"""
 
@@ -26,12 +26,6 @@ Simplification process requires a valid animation file to be selected"""
     filter_glob: bpy.props.StringProperty(
         default='*.anm',
         options={'HIDDEN'}
-    )
-
-    load_at_0z: bpy.props.BoolProperty(
-        name="Load at height 0",
-        description="Move character's root bone to height 0",
-        default=True,
     )
 
     apply_anim: bpy.props.BoolProperty(
@@ -74,7 +68,7 @@ Simplification process requires a valid animation file to be selected"""
                 chr = ChrFile.read(self.chr_filepath)
                 anm = AnmFile.read(self.filepath)
                 directory = str(Path(self.chr_filepath).parent)
-                obj = chr.createSimplified(anm, directory, self.load_at_0z)
+                obj = chr.createSimplified(anm, directory, self)
                 if self.apply_anim:
                     anm.create(obj.parent)
             except Exception as e:

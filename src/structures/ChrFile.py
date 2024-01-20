@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from os import path
 from pathlib import Path
+
+from ..settings.BakeSettings import BakeSettings
 from ..bake import bake_texture
 
 import bpy
 from ..helpers import save_mat_texture
+from ..settings.ImportSkeletonSettings import ImportSkeletonSettings
 
 from .SklFile import SklFile
 from .AnmFile import AnmFile
@@ -15,22 +18,18 @@ class ChrFile:
     model: str = ""
     texture: str = ""
 
-    def create(self, directory: str, load_at_0z: bool):
+    def create(self, directory: str, skl_settings: ImportSkeletonSettings):
         # TODO: error handling
         image = bpy.data.images.load(path.join(directory, self.texture))
         skl = SklFile.read(path.join(directory, self.model))
-        if load_at_0z:
-            skl.moveTo0z()
-        return skl.create(Path(self.model).stem, (0, 0, 0), image)
+        return skl.create(Path(self.model).stem, image, skl_settings)
 
-    def createSimplified(self, anm, directory: str, load_at_0z: bool):
+    def createSimplified(self, anm, directory: str, skl_settings: ImportSkeletonSettings):
         # TODO: error handling
         image = bpy.data.images.load(path.join(directory, self.texture))
         skl = SklFile.read(path.join(directory, self.model))
         skl.simplify(anm)
-        if load_at_0z:
-            skl.moveTo0z()
-        return skl.create(Path(self.model).stem, (0, 0, 0), image)
+        return skl.create(Path(self.model).stem, image, skl_settings)
 
     def __init__(self, model: str, texture: str) -> None:
         self.model = model
@@ -58,7 +57,7 @@ class ChrFile:
 
 
     @staticmethod
-    def write(filename: str, object: bpy.types.Object, texture_name: str, bake: bool = True):
+    def write(filename: str, object: bpy.types.Object, texture_name: str, bake_settings: BakeSettings):
         name = Path(filename).stem
         base_dir = path.dirname(filename)
 
@@ -70,7 +69,7 @@ class ChrFile:
 
         mesh = object.children[0]
 
-        if bake:
+        if bake_settings.bake_materials:
             bake_texture(mesh, path.join(base_dir, chr.texture))
         else:
             found = False

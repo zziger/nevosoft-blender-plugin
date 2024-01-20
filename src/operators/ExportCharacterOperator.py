@@ -4,14 +4,15 @@ import bpy
 import bpy_extras
 from bpy.props import BoolProperty, StringProperty
 from bpy.types import Panel
+
+from ..settings.BakeSettings import BakeSettings
 from .ExportSkeletonOperator import ExportSkeletonOperator
 from ..logger import operator_logger
-
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
 
 
-class ExportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+class ExportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper, BakeSettings):
     """Export Nevosoft Character and Skeleton file from selected armature.
 Armature must have one mesh child. Output character includes model, armature and texture data"""
 
@@ -28,12 +29,6 @@ Armature must have one mesh child. Output character includes model, armature and
         description="Name for texture file",
         default=""
     )
-
-    bake_materials: BoolProperty(
-        name="Bake materials",
-        description="Bake materials instead of searching for texture",
-        default=False,
-    )
     
     @classmethod
     def poll(cls, context):
@@ -46,7 +41,7 @@ Armature must have one mesh child. Output character includes model, armature and
                 if obj is None:
                     raise Exception("Failed to find an armature to export. Select armature in your 3D viewport and make sure it has a mesh child")
                 
-                ChrFile.write(self.filepath, obj, self.texture_name, bake=self.bake_materials)
+                ChrFile.write(self.filepath, obj, self.texture_name, self)
             except Exception as e:
                 self.error(str(e))
                 traceback.print_exception(e)

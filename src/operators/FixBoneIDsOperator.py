@@ -5,7 +5,7 @@ import bpy
 import bpy_extras
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG
 from mathutils import Vector, Matrix, Quaternion, Euler
-from ..settings import get_preferences
+from ..preferences import get_preferences
 from .ExportSkeletonOperator import ExportSkeletonOperator
 
 from ..utils import find_last

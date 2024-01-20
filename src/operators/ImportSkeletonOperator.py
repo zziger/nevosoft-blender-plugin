@@ -4,6 +4,7 @@ import traceback
 import bpy
 import bpy_extras
 
+from ..settings.ImportSkeletonSettings import ImportSkeletonSettings
 from ..helpers import OperatorBase
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
@@ -11,7 +12,7 @@ from ..structures.AnmFile import AnmFile
 from ..logger import operator_logger
 
 
-class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper, ImportSkeletonSettings):
     """Import Nevosoft Skeleton file into current scene"""
 
     bl_idname = "nevosoft.import_skeleton"
@@ -25,12 +26,6 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
         options={'HIDDEN'}
     )
 
-    load_at_0z: bpy.props.BoolProperty(
-        name="Load at height 0",
-        description="Move skeleton's root bone to height 0",
-        default=True,
-    )
-
     def execute(self, context):
         with operator_logger(self):
             try:
@@ -40,10 +35,7 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
                     bpy.ops.nevosoft.import_simplified_skeleton('INVOKE_DEFAULT', skl_filepath=self.filepath, load_at_0z=self.load_at_0z)
                     return {'FINISHED'}
                     
-                if self.load_at_0z:
-                    skl.moveTo0z()
-                    
-                skl.create(Path(self.filepath).stem, (0, 0, 0), None)
+                skl.create(Path(self.filepath).stem, None, self)
             except Exception as e:
                 self.error(str(e))
                 traceback.print_exception(e)

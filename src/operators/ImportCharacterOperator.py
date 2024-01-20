@@ -4,6 +4,7 @@ import traceback
 import bpy
 import bpy_extras
 
+from ..settings.ImportSkeletonSettings import ImportSkeletonSettings
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
 from ..structures.MshFile import MshFile
@@ -12,7 +13,7 @@ from ..structures.AnmFile import AnmFile
 from ..logger import operator_logger
 
 
-class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
+class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper, ImportSkeletonSettings):
     """Import Nevosoft Character file into current scene"""
 
     bl_idname = "nevosoft.import_character"
@@ -26,12 +27,6 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
         options={'HIDDEN'}
     )
 
-    load_at_0z: bpy.props.BoolProperty(
-        name="Load at height 0",
-        description="Move character's root bone to height 0",
-        default=True,
-    )
-
     def execute(self, context):
         with operator_logger(self):
             try:
@@ -42,7 +37,7 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
                     bpy.ops.nevosoft.import_simplified_character('INVOKE_DEFAULT', chr_filepath=self.filepath, load_at_0z=self.load_at_0z)
                     return {'FINISHED'}
                 
-                chr.create(directory, self.load_at_0z)
+                chr.create(directory, self)
             except Exception as e:
                 self.error(str(e))
                 traceback.print_exception(e)
