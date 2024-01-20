@@ -11,6 +11,7 @@ from ..structures.AnmFile import AnmFile
 from .ExportSkeletonOperator import ExportSkeletonOperator
 from ..logger import operator_logger
 from ..settings.AnimationSettings import AnimationSettings
+from ..panels.BaseSettingsPanel import BaseSettingsPanel
 
 class ImportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper, AnimationSettings):
     """Import Nevosoft Animation file onto selected armature.
@@ -38,9 +39,7 @@ Armature must have one mesh child"""
         return ExportSkeletonOperator.find_armature() is not None
 
     def draw(self, context):
-        layout = self.layout
-        operator = context.space_data.active_operator
-        layout.prop(operator, 'use_quaternions')
+        pass
             
     def execute(self, context):
         with operator_logger(self):
@@ -56,3 +55,14 @@ Armature must have one mesh child"""
                 traceback.print_exception(e)
 
             return {'FINISHED'}
+
+
+class ImportAnimationSettingsPanel(bpy.types.Panel, BaseSettingsPanel):
+    bl_idname = 'FILE_PT_nevosoft_import_animation_settings'
+    bl_label = "Import settings"
+    bl_order = 0
+
+    operator_id = 'NEVOSOFT_OT_import_animation'
+
+    def draw_settings(self, context, layout, operator):
+        layout.prop(operator, 'use_quaternions')

@@ -9,6 +9,7 @@ from ..helpers import OperatorBase
 from ..structures.CgoFile import CgoFile
 from ..utils import clear_scene
 from ..logger import operator_logger
+from ..panels.BaseSettingsPanel import BaseSettingsPanel
 
 
 class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ImportHelper):
@@ -31,6 +32,9 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
         default=True,
     )
 
+    def draw(self, context):
+        pass
+
     def execute(self, context):
         with operator_logger(self):
             try:
@@ -43,7 +47,13 @@ class ImportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
                 traceback.print_exception(e)
             return {'FINISHED'}
 
-    def draw(self, context):
-        layout = self.layout
-        operator = context.space_data.active_operator
+
+class ImportObjectSettingsPanel(bpy.types.Panel, BaseSettingsPanel):
+    bl_idname = 'FILE_PT_nevosoft_import_object_settings'
+    bl_label = "Import settings"
+    bl_order = 0
+
+    operator_id = 'NEVOSOFT_OT_import_object'
+
+    def draw_settings(self, context, layout, operator):
         layout.prop(operator, 'clear_scene')

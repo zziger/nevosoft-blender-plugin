@@ -10,6 +10,7 @@ from .ExportSkeletonOperator import ExportSkeletonOperator
 from ..logger import operator_logger
 from ..helpers import OperatorBase
 from ..structures.ChrFile import ChrFile
+from ..panels.BaseSettingsPanel import BaseSettingsPanel
 
 
 class ExportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper, BakeSettings):
@@ -38,6 +39,9 @@ Armature must have one mesh child. Output character includes model, armature and
     @classmethod
     def poll(cls, context):
         return ExportSkeletonOperator.find_armature() is not None
+    
+    def draw(self, context):
+        pass
 
     def execute(self, context):
         with operator_logger(self):
@@ -52,8 +56,14 @@ Armature must have one mesh child. Output character includes model, armature and
                 traceback.print_exception(e)
 
             return {'FINISHED'}
-    
-    def draw(self, context):
-        layout = self.layout
-        operator = context.space_data.active_operator
+
+
+class ExportCharacterSettingsPanel(bpy.types.Panel, BaseSettingsPanel):
+    bl_idname = 'FILE_PT_nevosoft_export_character_settings'
+    bl_label = "Export settings"
+    bl_order = 0
+
+    operator_id = 'NEVOSOFT_OT_export_character'
+
+    def draw_settings(self, context, layout, operator):
         layout.prop(operator, 'texture_name')

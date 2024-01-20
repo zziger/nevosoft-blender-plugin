@@ -9,6 +9,7 @@ from ..settings.BakeSettings import BakeSettings
 from ..helpers import OperatorBase
 from ..structures.CgoFile import CgoFile
 from ..logger import operator_logger
+from ..panels.BaseSettingsPanel import BaseSettingsPanel
 
 class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper, BakeSettings):
     """Export Nevosoft Object file from current scene"""
@@ -35,6 +36,9 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
     @classmethod
     def poll(cls, context):
         return bpy.context.scene is not None and len(bpy.context.scene.objects) > 0 or len(bpy.context.selected_objects) > 0
+    
+    def draw(self, context):
+        pass
 
     def execute(self, context):
         with operator_logger(self):
@@ -53,7 +57,13 @@ class ExportObjectOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils
 
         return {'FINISHED'}
 
-    def draw(self, context):
-        layout = self.layout
-        operator = context.space_data.active_operator
+
+class ExportObjectSettingsPanel(bpy.types.Panel, BaseSettingsPanel):
+    bl_idname = 'FILE_PT_nevosoft_export_object_settings'
+    bl_label = "Export settings"
+    bl_order = 0
+
+    operator_id = 'NEVOSOFT_OT_export_object'
+
+    def draw_settings(self, context, layout, operator):
         layout.prop(operator, 'only_selected')
