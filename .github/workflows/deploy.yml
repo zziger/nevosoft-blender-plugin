@@ -1,5 +1,5 @@
 name: Release plugin version
-run-name: Release plugin ${{ github.ref }}
+run-name: Release plugin ${{ github.ref_name }}
 
 on:
     push:
