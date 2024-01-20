@@ -36,3 +36,6 @@ class ModelTools(bpy.types.Panel):
 
         layout.label(text="Bone utils:")
         layout.operator("nevosoft.fix_bone_ids")
+
+def register():
+    bpy.types.EditBone.tag = bpy.props.IntProperty(name="Bone ID", default=-1, min=-1)
