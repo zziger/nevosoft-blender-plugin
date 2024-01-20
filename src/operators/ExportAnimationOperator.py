@@ -5,11 +5,12 @@ import bpy_extras
 from ..logger import operator_logger
 from .ExportSkeletonOperator import ExportSkeletonOperator
 
+from ..settings.AnimationSettings import AnimationSettings
 from ..helpers import OperatorBase
 from ..structures.AnmFile import AnmFile
 
 
-class ExportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper):
+class ExportAnimationOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_utils.ExportHelper, AnimationSettings):
     """Export Nevosoft Animation file from selected armature.
 Armature must have one mesh child, animation data includes bone rotations and armature object location"""
 
@@ -26,6 +27,9 @@ Armature must have one mesh child, animation data includes bone rotations and ar
         obj = ExportSkeletonOperator.find_armature()
         return obj is not None and obj.animation_data is not None and obj.animation_data.action is not None
 
+    def draw(self, context):
+        pass
+
     def execute(self, context):
         with operator_logger(self):
             try:
@@ -36,7 +40,7 @@ Armature must have one mesh child, animation data includes bone rotations and ar
                 if obj.animation_data is None or obj.animation_data.action is None:
                     raise Exception("Failed to find an animation to export. Make sure selected armature contains an animation")
 
-                anm = AnmFile.fromObject(obj)
+                anm = AnmFile.fromObject(obj, anm_settings=self)
                 anm.write(self.filepath)
             except Exception as e:
                 self.error(str(e))

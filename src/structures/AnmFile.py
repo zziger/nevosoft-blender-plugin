@@ -5,6 +5,7 @@ from math import cos, sin, floor, pi
 from pathlib import Path
 
 import bpy
+from ..settings.AnimationSettings import AnimationSettings
 from ..preferences import get_preferences
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG, REFERENCE_BONE, TEMP_BONE
 from ..logger import logger
@@ -41,7 +42,7 @@ class AnmFile:
         angle = self.bone_rotations[frame][index]
         return AnmFile.to_quat(angle)
 
-    def create(self, obj: bpy.types.Object, use_quat = True) -> bpy.types.AnimData:
+    def create(self, obj: bpy.types.Object, use_quat = True, anm_settings: AnimationSettings = AnimationSettings()) -> bpy.types.AnimData:
         """Applies animation data to a specified object"""
 
         armature: bpy.types.Armature = obj
@@ -60,30 +61,43 @@ class AnmFile:
         bpy.context.scene.frame_end = floor(list(self.bone_rotations)[-1] * frame_distance)
         base = {}
 
-        for frame, rotations in self.bone_rotations.items():
-            for bone, coord in enumerate(rotations):
-                if not bone in base:
-                    base[bone] = coord
+        if anm_settings.bone_rotations:
+            logger.debug("Applying bone rotations")
+            for frame, rotations in self.bone_rotations.items():
+                for bone, coord in enumerate(rotations):
+                    if not bone in base:
+                        base[bone] = coord
 
-            for bone, coord in enumerate(rotations):
-                boneObj: bpy.types.PoseBone = next(filter(lambda e: getBoneTag(e.bone) == bone, armature.pose.bones), None)
+                for bone, coord in enumerate(rotations):
+                    boneObj: bpy.types.PoseBone = next(filter(lambda e: getBoneTag(e.bone) == bone, armature.pose.bones), None)
 
-                if boneObj == None:
-                    logger.warn("Failed to find bone %d", bone)
-                    continue
+                    if boneObj == None:
+                        logger.warn("Failed to find bone %d", bone)
+                        continue
 
-                if use_quat:
-                    boneObj.rotation_mode = "QUATERNION"
-                    boneObj.rotation_quaternion = AnmFile.to_quat(coord)
-                    boneObj.keyframe_insert(data_path="rotation_quaternion", frame=frame * frame_distance)
-                else:
-                    boneObj.rotation_mode = "XYZ"
-                    boneObj.rotation_euler = coord
-                    boneObj.keyframe_insert(data_path="rotation_euler", frame=frame * frame_distance)
+                    if use_quat:
+                        boneObj.rotation_mode = "QUATERNION"
+                        boneObj.rotation_quaternion = AnmFile.to_quat(coord)
+                        boneObj.keyframe_insert(data_path="rotation_quaternion", frame=frame * frame_distance)
+                    else:
+                        boneObj.rotation_mode = "XYZ"
+                        boneObj.rotation_euler = coord
+                        boneObj.keyframe_insert(data_path="rotation_euler", frame=frame * frame_distance)
 
-        for frame, coord in enumerate(self.movements):
-            armature.location = coord
-            armature.keyframe_insert(data_path="location", frame=frame)
+        if anm_settings.location_x or anm_settings.location_y or anm_settings.location_z:
+            logger.debug("Applying object location")
+            for frame, coord in enumerate(self.movements):
+                if anm_settings.location_x:
+                    armature.location.x = coord.x
+                    armature.keyframe_insert(data_path="location", frame=frame * frame_distance, index=0)
+
+                if anm_settings.location_y:
+                    armature.location.y = coord.y
+                    armature.keyframe_insert(data_path="location", frame=frame * frame_distance, index=1)
+
+                if anm_settings.location_z:
+                    armature.location.z = coord.z
+                    armature.keyframe_insert(data_path="location", frame=frame * frame_distance, index=2)
 
         # disable interpolation, as blender can't interpolate by slerp
         for fcurve in armature.animation_data.action.fcurves:
@@ -206,7 +220,7 @@ class AnmFile:
         bpy.ops.object.mode_set(mode='OBJECT')
     
     @staticmethod
-    def fromObject(obj: bpy.types.Object, align_bones = True) -> AnmFile:
+    def fromObject(obj: bpy.types.Object, align_bones = True, anm_settings: AnimationSettings = AnimationSettings()) -> AnmFile:
         """Creates an animation from an object
         
         Parameters
@@ -239,28 +253,39 @@ class AnmFile:
                 frame_id = f - start_frame
                 logger.info('Creating animation frame %d', frame_id)
                 
-                movements.append(Vector(obj.matrix_world @ obj.pose.bones[findBoneByTag(armature.bones, 0).name].head))
+                movement = Vector(obj.matrix_world @ obj.pose.bones[findBoneByTag(armature.bones, 0).name].head)
+
+                if not anm_settings.location_x:
+                    movement.x = 0
+                if not anm_settings.location_y:
+                    movement.y = 0
+                if not anm_settings.location_z:
+                    movement.z = 0
+                    
+                movements.append(movement)
 
                 bone_rotations[frame_id] = [Vector((0, 0, 0)) for _ in range(bone_count)]
-                for bone_index in range(len(obj.pose.bones)):
-                    pose_bone = obj.pose.bones[bone_index]
-                    bone = pose_bone.bone
-                    reference_pose_bone = obj.pose.bones[bone[REFERENCE_BONE]] if REFERENCE_BONE in bone else pose_bone
 
-                    if TEMP_BONE in bone:
-                        logger.debug('Skipping bone %s', bone.name)
-                        continue
+                if anm_settings.bone_rotations:
+                    for bone_index in range(len(obj.pose.bones)):
+                        pose_bone = obj.pose.bones[bone_index]
+                        bone = pose_bone.bone
+                        reference_pose_bone = obj.pose.bones[bone[REFERENCE_BONE]] if REFERENCE_BONE in bone else pose_bone
 
-                    bone_tag = getBoneTag(pose_bone.bone)
-                    matrix: Matrix = reference_pose_bone.matrix 
+                        if TEMP_BONE in bone:
+                            logger.debug('Skipping bone %s', bone.name)
+                            continue
 
-                    parent_pose_bone = pose_bone.parent
-                    if parent_pose_bone:
-                        parent_bone = parent_pose_bone.bone
-                        parent_reference_pose_bone = obj.pose.bones[parent_bone[REFERENCE_BONE]] if REFERENCE_BONE in parent_bone else parent_pose_bone
-                        matrix = parent_reference_pose_bone.matrix.inverted_safe() @ matrix
+                        bone_tag = getBoneTag(pose_bone.bone)
+                        matrix: Matrix = reference_pose_bone.matrix 
 
-                    bone_rotations[frame_id][bone_tag] = Vector(matrix.to_quaternion().to_euler('XYZ'))
+                        parent_pose_bone = pose_bone.parent
+                        if parent_pose_bone:
+                            parent_bone = parent_pose_bone.bone
+                            parent_reference_pose_bone = obj.pose.bones[parent_bone[REFERENCE_BONE]] if REFERENCE_BONE in parent_bone else parent_pose_bone
+                            matrix = parent_reference_pose_bone.matrix.inverted_safe() @ matrix
+
+                        bone_rotations[frame_id][bone_tag] = Vector(matrix.to_quaternion().to_euler('XYZ'))
 
             scene.frame_current = curr_frame
             frame_time = round(1000 * scene.render.fps_base / scene.render.fps)
