@@ -16,7 +16,7 @@ jobs:
 
             - name: Parse build version
               id: parse_version
-              uses: battila7/get-version-action@v2
+              uses: dhkatz/get-version-action@v3.0.0
 
             - name: Check if version is valid
               run: |
@@ -26,12 +26,12 @@ jobs:
                 fi
 
             - name: Update stable version in __init__.py
-              if: ${{ !steps.parse_version.outputs.prerelease }}
+              if: ${{ !steps.parse_version.outputs.is-prerelease }}
               run: |
                 sed -i 's/"warning": ".*"/"version": (${{steps.parse_version.outputs.major}}, ${{steps.parse_version.outputs.minor}}, ${{steps.parse_version.outputs.patch}})/g' __init__.py
 
             - name: Update prerelease version in __init__.py
-              if: ${{ steps.parse_version.outputs.prerelease }}
+              if: ${{ steps.parse_version.outputs.is-prerelease }}
               run: |
                 sed -i 's/"warning": ".*"/"warning": "This is a pre-release plugin version",\n    "version": (${{steps.parse_version.outputs.major}}, ${{steps.parse_version.outputs.minor}}, ${{steps.parse_version.outputs.patch}}, "${{steps.parse_version.outputs.prerelease}}")/g' __init__.py
 
@@ -58,7 +58,7 @@ jobs:
               with:
                 tag_name: ${{ steps.parse_version.outputs.version }}
                 name: Version ${{ steps.parse_version.outputs.version-without-v }}
-                prerelease: ${{ !!steps.parse_version.outputs.prerelease }}
+                prerelease: ${{ !!steps.parse_version.outputs.is-prerelease }}
                 generate_release_notes: true
                 body: ${{ steps.read_release_body.outputs.content }}
                 files: |
