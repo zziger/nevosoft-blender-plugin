@@ -51,9 +51,6 @@ Simplification process requires a valid animation file to be selected"""
             layout.label(text="Proceed?")
         else:
             layout = self.layout
-        
-            layout.use_property_split = True
-            layout.use_property_decorate = False
             operator = context.space_data.active_operator
             layout.prop(operator, 'apply_anim')
 

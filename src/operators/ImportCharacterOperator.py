@@ -27,6 +27,9 @@ class ImportCharacterOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_ut
         options={'HIDDEN'}
     )
 
+    def draw(self, context):
+        pass
+
     def execute(self, context):
         with operator_logger(self):
             try:

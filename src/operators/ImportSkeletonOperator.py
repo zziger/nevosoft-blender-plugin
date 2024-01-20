@@ -26,6 +26,9 @@ class ImportSkeletonOperator(bpy.types.Operator, OperatorBase, bpy_extras.io_uti
         options={'HIDDEN'}
     )
 
+    def draw(self, context):
+        pass
+
     def execute(self, context):
         with operator_logger(self):
             try:
