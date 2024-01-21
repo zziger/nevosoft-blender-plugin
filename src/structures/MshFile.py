@@ -83,9 +83,11 @@ class MshFile:
         # creating material
         mat = bpy.data.materials.new(name="material")  # todo name
         mat.use_nodes = True
+        mat.blend_method = 'HASHED'
         mat_bsdf = next(filter(lambda e: e.type == 'BSDF_PRINCIPLED', mat.node_tree.nodes), None)
         mat_texture = mat.node_tree.nodes.new('ShaderNodeTexImage')
         mat.node_tree.links.new(mat_bsdf.inputs['Base Color'], mat_texture.outputs['Color'])
+        mat.node_tree.links.new(mat_bsdf.inputs['Alpha'], mat_texture.outputs['Alpha'])
 
         if image is not None:
             mat_texture.image = image

@@ -307,9 +307,11 @@ class SklFile:
         # creating material
         mat = bpy.data.materials.new(name="material")  # todo name
         mat.use_nodes = True
+        mat.blend_method = 'HASHED'
         matBsdf = next(filter(lambda e: e.type == 'BSDF_PRINCIPLED', mat.node_tree.nodes), None)
         matTex = mat.node_tree.nodes.new('ShaderNodeTexImage')
         mat.node_tree.links.new(matBsdf.inputs['Base Color'], matTex.outputs['Color'])
+        mat.node_tree.links.new(matBsdf.inputs['Alpha'], matTex.outputs['Alpha'])
 
         if image != None:
             matTex.image = image
