@@ -26,7 +26,7 @@ class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
     
     @classmethod
     def poll(cls, context):
-        return ExportSkeletonOperator.find_armature() is not None
+        return ExportSkeletonOperator.find_armature() is not None and context.active_bone is not None and get_bone_properties(context.active_bone).tag < 0
     
     def invoke(self, context, event):
         return self.execute(context)
