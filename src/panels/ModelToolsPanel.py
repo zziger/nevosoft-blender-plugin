@@ -17,3 +17,4 @@ class ModelTools(bpy.types.Panel):
 
         layout.label(text="Bone utils:")
         layout.operator("nevosoft.fix_bone_ids")
+        layout.operator("nevosoft.place_skeleton_on_ground")
