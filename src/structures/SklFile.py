@@ -134,7 +134,7 @@ class SklNs:
 
             for ns_bone in self.bones:
                 file.write(struct.pack('I', len(ns_bone.children)))
-                for child in ns_bone.children:
+                for child in ns_bone.children[:5]:
                     file.write(struct.pack('I', child))
                 for _ in range(5 - len(ns_bone.children)):  # arr is const 5 length, filling rest space with zeros
                     file.write(struct.pack('I', 0))
@@ -461,6 +461,9 @@ class SklFile:
             pbone = find_bone_by_tag(armature.edit_bones, pbone_index)
             data.boneVecs[ibone] = bone.head - pbone.head
 
+        if len(bone.children) > 5:
+            raise Exception("Bone " + bone.name + " has more than 5 children")
+        
         child_ids: list[int] = []
         for children in bone.children:
             child_ids.append(get_bone_tag(children))
@@ -537,10 +540,25 @@ class SklFile:
         for index, vertex in enumerate(bm.verts):
 
             vertex: bmesh.types.BMVert
-            vertexDeform: bmesh.types.BMDeformVert = vertex[deform]
+            vertex_deform: bmesh.types.BMDeformVert = vertex[deform]
             
             ns_link = SklNsVertexLink()
-            for group, weight in vertexDeform.items():
+
+            sorted_vertex_deform = vertex_deform.items()
+            sorted_vertex_deform.sort(key=lambda group: group[1], reverse=True)
+
+            total = 0
+
+            if len(sorted_vertex_deform) > 3:
+                logger.warning("Vertex " + str(index) + " has more than 3 bones assigned (%d)", len(sorted_vertex_deform))
+                pass
+            
+            sorted_vertex_deform = sorted_vertex_deform[:3]
+
+            for group, weight in sorted_vertex_deform:
+                total += weight
+
+            for group, weight in sorted_vertex_deform:
                 if weight == 0:
                     continue
 
@@ -552,7 +570,7 @@ class SklFile:
 
                 tag = get_bone_tag(rig.data.bones[vertex_group.name])
                 pos = vertex.co - bone.head
-                ns_link.data.append(SklLink(weight, tag, pos)),
+                ns_link.data.append(SklLink(weight / total, tag, pos)),
 
             data.vertLinks[index] = ns_link
             data.meta.vertices[index] = vertex.co
