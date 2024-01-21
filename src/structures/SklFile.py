@@ -514,6 +514,7 @@ class SklFile:
         bm: bmesh.types.BMesh = bmesh.new()
         deps_graph = bpy.context.evaluated_depsgraph_get()
         bm.from_object(obj, deps_graph)
+        bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method='BEAUTY', ngon_method='BEAUTY')
 
         msh: bpy.types.Mesh = rig.children[0].data
         uvmap = msh.uv_layers[0]
