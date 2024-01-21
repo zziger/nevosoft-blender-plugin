@@ -9,7 +9,7 @@ from ..preferences import get_preferences
 from .ExportSkeletonOperator import ExportSkeletonOperator
 
 from ..utils import find_last
-from ..helpers import OperatorBase, select, set_active
+from ..helpers import OperatorBase, get_bone_properties, select, set_active
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
@@ -68,13 +68,15 @@ class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
                 found = list()
 
                 for bone in obj.data.edit_bones:
+                    properties = get_bone_properties(bone)
+
                     if bone.parent == None:
-                        bone.tag = 0
+                        properties.tag = 0
                         used.append(0)
-                    elif bone.tag == None or bone.tag < 0 or bone.tag in found:
-                        bone.tag = 0
-                        while bone.tag in used:
-                            bone.tag += 1
+                    elif properties.tag < 0 or properties.tag in found:
+                        properties.tag = 0
+                        while properties.tag in used:
+                            properties.tag += 1
                         used.append(bone.tag)
                     found.append(bone.tag) 
 

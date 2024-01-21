@@ -1,4 +1,6 @@
 import bpy
+from ..preferences import get_preferences
+from ..helpers import get_bone_properties
 
 class BoneProperties(bpy.types.Panel):
     bl_label = "Nevosoft"
@@ -15,5 +17,9 @@ class BoneProperties(bpy.types.Panel):
         bone = context.active_bone
         layout = self.layout
 
+        properties = get_bone_properties(bone)
         row = layout.row()
-        row.prop(bone, "tag")
+        row.prop(properties, "tag")
+
+        if get_preferences().debug:
+            layout.label(text="Data block version: " + str(properties.data_ver))

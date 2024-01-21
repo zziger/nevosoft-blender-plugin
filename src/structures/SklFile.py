@@ -13,7 +13,7 @@ import bpy.types
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG
 from mathutils import Vector, Matrix, Quaternion
 from ..preferences import get_preferences
-from ..helpers import getBoneTag, findBoneByTag, set_active
+from ..helpers import get_bone_properties, get_bone_tag, find_bone_by_tag, set_active
 
 from .AnmFile import AnmFile
 
@@ -379,12 +379,12 @@ class SklFile:
         for index, bone in enumerate(self.bones):
             name = bone.name
             current_bone = armature.edit_bones.new(name)
-            current_bone.tag = index
+            get_bone_properties(current_bone).tag = index
             bonemap[index] = current_bone
             group = sklObj.vertex_groups.new(name=name)
             for indexInner, boneInner in enumerate(self.bones):
                 if index in boneInner.children:
-                    current_bone.parent = findBoneByTag(armature.edit_bones, indexInner)
+                    current_bone.parent = find_bone_by_tag(armature.edit_bones, indexInner)
             current_bone.use_local_location = False
             current_bone.head = bone.pos
             current_bone.tail = bone.pos + (BONE_DIRECTION_DEBUG if get_preferences().debug else BONE_DIRECTION)
@@ -395,7 +395,7 @@ class SklFile:
             for link in vertLink.links:
                 bone = self.bones[link.indx]
                 if link.weight != 0:
-                    sklObj.vertex_groups[findBoneByTag(armature.edit_bones, link.indx).name].add([i], link.weight, "ADD")
+                    sklObj.vertex_groups[find_bone_by_tag(armature.edit_bones, link.indx).name].add([i], link.weight, "ADD")
 
         bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -450,22 +450,22 @@ class SklFile:
 
     @staticmethod
     def prepareBoneWrite(armature: bpy.types.Armature, data: SklNs, ibone: int, pbone_index: int):
-        bone = findBoneByTag(armature.edit_bones, ibone)
+        bone = find_bone_by_tag(armature.edit_bones, ibone)
 
         if ibone == 0:
             data.boneVecs[ibone] = bone.head
         else:
-            pbone = findBoneByTag(armature.edit_bones, pbone_index)
+            pbone = find_bone_by_tag(armature.edit_bones, pbone_index)
             data.boneVecs[ibone] = bone.head - pbone.head
 
         child_ids: list[int] = []
         for children in bone.children:
-            child_ids.append(getBoneTag(children))
+            child_ids.append(get_bone_tag(children))
 
         data.bones[ibone] = SklNsBone(bone.name, child_ids)
 
         for children in bone.children:
-            SklFile.prepareBoneWrite(armature, data, getBoneTag(children), ibone)
+            SklFile.prepareBoneWrite(armature, data, get_bone_tag(children), ibone)
 
     @staticmethod
     def ensureBoneIds(rig: bpy.types.Object):
@@ -475,21 +475,21 @@ class SklFile:
         if len(root_bones) > 1:
             raise Exception("Multiple root bones found! Please ensure that your armature has only one root bone with ID 0")
             
-        if getBoneTag(root_bones[0]) != 0:
+        if get_bone_tag(root_bones[0]) != 0:
             raise Exception("Root bone must have ID 0")
 
         for bone in armature.bones:
-            if getBoneTag(bone) < 0:
+            if get_bone_tag(bone) < 0:
                 raise Exception("Bone " + bone.name + " has no ID")
             
         used = list()
         for bone in armature.bones:
-            if getBoneTag(bone) in used:
-                raise Exception("Bone " + bone.name + " has duplicate ID " + str(getBoneTag(bone)))
-            used.append(getBoneTag(bone))
+            if get_bone_tag(bone) in used:
+                raise Exception("Bone " + bone.name + " has duplicate ID " + str(get_bone_tag(bone)))
+            used.append(get_bone_tag(bone))
             
         for i in range(len(armature.bones)):
-            if findBoneByTag(armature.bones, i) == None:
+            if find_bone_by_tag(armature.bones, i) == None:
                 raise Exception("Bone with ID " + str(i) + " not found")
     
     @staticmethod
@@ -546,7 +546,7 @@ class SklFile:
                     logger.warn("Bone not found: " + vertex_group.name)
                     continue
 
-                tag = getBoneTag(rig.data.bones[vertex_group.name])
+                tag = get_bone_tag(rig.data.bones[vertex_group.name])
                 pos = vertex.co - bone.head
                 ns_link.data.append(SklLink(weight, tag, pos)),
 

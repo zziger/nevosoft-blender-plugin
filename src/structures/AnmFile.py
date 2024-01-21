@@ -10,7 +10,7 @@ from ..preferences import get_preferences
 from ..constants import BONE_DIRECTION, BONE_DIRECTION_DEBUG, REFERENCE_BONE, TEMP_BONE
 from ..logger import logger
 from mathutils import Quaternion, Vector, Euler, Matrix
-from ..helpers import compare_quat, findBoneByTag, getBoneTag, set_active
+from ..helpers import compare_quat, find_bone_by_tag, get_bone_tag, set_active
 
 class AnmFile:
     bones: int
@@ -69,7 +69,7 @@ class AnmFile:
                         base[bone] = coord
 
                 for bone, coord in enumerate(rotations):
-                    boneObj: bpy.types.PoseBone = next(filter(lambda e: getBoneTag(e.bone) == bone, armature.pose.bones), None)
+                    boneObj: bpy.types.PoseBone = next(filter(lambda e: get_bone_tag(e) == bone, armature.pose.bones), None)
 
                     if boneObj == None:
                         logger.warn("Failed to find bone %d", bone)
@@ -116,7 +116,7 @@ class AnmFile:
         logger.debug("Pre-transposing animation to pose")
 
         for bone in pose.bones:
-            tag = getBoneTag(bone.bone)
+            tag = get_bone_tag(bone)
             
             quat_transformation = bone.rotation_euler.to_quaternion()
 
@@ -253,7 +253,7 @@ class AnmFile:
                 frame_id = f - start_frame
                 logger.info('Creating animation frame %d', frame_id)
                 
-                movement = Vector(obj.matrix_world @ obj.pose.bones[findBoneByTag(armature.bones, 0).name].head)
+                movement = Vector(obj.matrix_world @ obj.pose.bones[find_bone_by_tag(armature.bones, 0).name].head)
 
                 if not anm_settings.location_x:
                     movement.x = 0
@@ -276,7 +276,7 @@ class AnmFile:
                             logger.debug('Skipping bone %s', bone.name)
                             continue
 
-                        bone_tag = getBoneTag(pose_bone.bone)
+                        bone_tag = get_bone_tag(pose_bone)
                         matrix: Matrix = reference_pose_bone.matrix 
 
                         parent_pose_bone = pose_bone.parent

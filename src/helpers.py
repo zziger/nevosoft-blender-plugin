@@ -1,5 +1,7 @@
 import math
+from typing import Union
 from mathutils import Quaternion
+from .extensions import BoneProperties
 from .logger import logger
 import bpy
 
@@ -21,13 +23,17 @@ class OperatorBase:
 class ErrorException(Exception):
     pass
 
-def getBoneTag(bone):
-    if not 'tag' in bone or bone['tag'] == None:
-        return -1
-    return bone['tag']
+def get_bone_properties(bone: Union[bpy.types.Bone, bpy.types.EditBone, bpy.types.PoseBone]) -> BoneProperties:
+    if isinstance(bone, bpy.types.Bone) or isinstance(bone, bpy.types.EditBone):
+        return bone.nevosoft
+    elif isinstance(bone, bpy.types.PoseBone):
+        return bone.bone.nevosoft
+    
+def get_bone_tag(bone: Union[bpy.types.Bone, bpy.types.EditBone, bpy.types.PoseBone]) -> int:
+    return get_bone_properties(bone).tag
 
-def findBoneByTag(bones, tag: int) -> bpy.types.Bone:
-    return next(filter(lambda e: getBoneTag(e) == tag, bones), None)
+def find_bone_by_tag(bones, tag: int) -> bpy.types.Bone:
+    return next(filter(lambda e: get_bone_tag(e) == tag, bones), None)
 
 def deselect():
     for inner in bpy.context.selected_objects:
