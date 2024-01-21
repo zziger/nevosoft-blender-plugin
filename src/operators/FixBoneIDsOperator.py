@@ -62,8 +62,10 @@ class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
                 used = list()
 
                 for bone in obj.data.edit_bones:
-                    if bone.tag != None:
-                        used.append(bone.tag)
+                    properties = get_bone_properties(bone)
+
+                    if properties.tag != None:
+                        used.append(properties.tag)
 
                 found = list()
 
@@ -77,8 +79,8 @@ class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
                         properties.tag = 0
                         while properties.tag in used:
                             properties.tag += 1
-                        used.append(bone.tag)
-                    found.append(bone.tag) 
+                        used.append(properties.tag)
+                    found.append(properties.tag) 
 
                 # TODO: fill ID gaps
             
