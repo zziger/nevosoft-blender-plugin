@@ -9,11 +9,11 @@ from ..preferences import get_preferences
 from .ExportSkeletonOperator import ExportSkeletonOperator
 
 from ..utils import find_last
-from ..helpers import OperatorBase, get_bone_properties, select, set_active
+from ..helpers import OperatorBase, find_bone_by_tag, get_bone_properties, select, set_active
 from ..structures.MshFile import MshFile
 from ..structures.SklFile import SklFile
 from ..structures.AnmFile import AnmFile
-from ..logger import operator_logger
+from ..logger import operator_logger, logger
 
 
 class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
@@ -59,30 +59,40 @@ class FixBoneIDsOperator(bpy.types.Operator, OperatorBase):
                 if len(root_bones) > 1:
                     raise Exception("Multiple root bones found! Please ensure that your armature has only one root bone with ID 0")
                 
-                used = list()
+                used_ids = set()
 
                 for bone in obj.data.edit_bones:
                     properties = get_bone_properties(bone)
 
-                    if properties.tag != None:
-                        used.append(properties.tag)
+                    if properties.tag >= 0:
+                        used_ids.add(properties.tag)
 
-                found = list()
+                found_ids = list()
 
                 for bone in obj.data.edit_bones:
                     properties = get_bone_properties(bone)
 
+                    # Enforce ID 0 for root bone
                     if bone.parent == None:
                         properties.tag = 0
-                        used.append(0)
-                    elif properties.tag < 0 or properties.tag in found:
+                        used_ids.add(0)
+                    # Fill missing IDs
+                    elif properties.tag < 0 or properties.tag in found_ids:
                         properties.tag = 0
-                        while properties.tag in used:
+                        while properties.tag in used_ids:
                             properties.tag += 1
-                        used.append(properties.tag)
-                    found.append(properties.tag) 
+                        used_ids.add(properties.tag)
 
-                # TODO: fill ID gaps
+                    found_ids.append(properties.tag) 
+
+                # Fill ID gaps
+                for i in range(len(obj.data.edit_bones)):
+                    if i not in found_ids:
+                        source = found_ids.pop(found_ids.index(max(found_ids)))
+                        logger.debug('Moving bone ID %s to %s', source, i)
+                        get_bone_properties(find_bone_by_tag(obj.data.edit_bones, source)).tag = i
+                        found_ids.append(i)
+
             
                 bpy.ops.object.mode_set(mode='OBJECT')
             except Exception as e:

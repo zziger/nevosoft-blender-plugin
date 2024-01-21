@@ -14,6 +14,7 @@ class ModelToolsSkeleton(bpy.types.Panel):
         
         layout.operator("nevosoft.fix_bone_ids")
         layout.operator("nevosoft.place_skeleton_on_ground")
+        layout.operator("object.vertex_group_limit_total", text="Limit vertex links").limit = 3
 
 class ModelToolsRetarget(bpy.types.Panel):
     bl_idname = 'OBJECT_PT_nevosoft_tools_retarget'
