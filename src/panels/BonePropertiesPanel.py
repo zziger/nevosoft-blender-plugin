@@ -18,8 +18,9 @@ class BoneProperties(bpy.types.Panel):
         layout = self.layout
 
         properties = get_bone_properties(bone)
-        row = layout.row()
-        row.prop(properties, "tag")
+        # row = layout.row()
+        layout.prop(properties, "tag")
+        layout.operator('nevosoft.assign_bone_id', text="Assign new ID")
 
         if get_preferences().debug:
             layout.label(text="Data block version: " + str(properties.data_ver))
