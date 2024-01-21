@@ -29,3 +29,6 @@ class ModelToolsRetarget(bpy.types.Panel):
         
         layout.operator("nevosoft.retarget_animations")
         layout.operator("nevosoft.retarget_model")
+        layout.operator("nevosoft.import_animation_batch")
+        layout.operator("nevosoft.export_animation_batch")
+        layout.operator("nevosoft.reapply_animation_batch_location")

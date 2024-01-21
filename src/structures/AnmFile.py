@@ -42,7 +42,7 @@ class AnmFile:
         angle = self.bone_rotations[frame][index]
         return AnmFile.to_quat(angle)
 
-    def create(self, obj: bpy.types.Object, use_quat = True, anm_settings: AnimationSettings = AnimationSettings()) -> bpy.types.AnimData:
+    def create(self, obj: bpy.types.Object, use_quat = True, anm_settings: AnimationSettings = AnimationSettings(), use_old_action = False, start_frame = 0) -> bpy.types.AnimData:
         """Applies animation data to a specified object"""
 
         armature: bpy.types.Armature = obj
@@ -50,24 +50,24 @@ class AnmFile:
         if armature.animation_data == None:
             armature.animation_data_create()
         
-        action = bpy.data.actions.new(name = self.name)
-        armature.animation_data.action = action
+        action = armature.animation_data.action
+
+        if not use_old_action:
+            action = bpy.data.actions.new(name = self.name)
+            armature.animation_data.action = action
 
         bpy.context.scene.render.fps = 1000
         bpy.context.scene.render.fps_base = self.frame_time
         frame_distance = 1
-        bpy.context.scene.frame_current = 0
-        bpy.context.scene.frame_start = 0
-        bpy.context.scene.frame_end = floor(list(self.bone_rotations)[-1] * frame_distance)
-        base = {}
+        bpy.context.scene.frame_current = start_frame
+        bpy.context.scene.frame_start = start_frame
+        bpy.context.scene.frame_end = start_frame + floor(list(self.bone_rotations)[-1] * frame_distance)
+
+        logger.info('Applying animation %s from frame %d to %d', self.name, start_frame, bpy.context.scene.frame_end)
 
         if anm_settings.bone_rotations:
             logger.debug("Applying bone rotations")
             for frame, rotations in self.bone_rotations.items():
-                for bone, coord in enumerate(rotations):
-                    if not bone in base:
-                        base[bone] = coord
-
                 for bone, coord in enumerate(rotations):
                     boneObj: bpy.types.PoseBone = next(filter(lambda e: get_bone_tag(e) == bone, armature.pose.bones), None)
 
@@ -78,26 +78,26 @@ class AnmFile:
                     if use_quat:
                         boneObj.rotation_mode = "QUATERNION"
                         boneObj.rotation_quaternion = AnmFile.to_quat(coord)
-                        boneObj.keyframe_insert(data_path="rotation_quaternion", frame=frame * frame_distance)
+                        boneObj.keyframe_insert(data_path="rotation_quaternion", frame=(frame + start_frame) * frame_distance)
                     else:
                         boneObj.rotation_mode = "XYZ"
                         boneObj.rotation_euler = coord
-                        boneObj.keyframe_insert(data_path="rotation_euler", frame=frame * frame_distance)
+                        boneObj.keyframe_insert(data_path="rotation_euler", frame=(frame + start_frame) * frame_distance)
 
         if anm_settings.location_x or anm_settings.location_y or anm_settings.location_z:
             logger.debug("Applying object location")
             for frame, coord in enumerate(self.movements):
                 if anm_settings.location_x:
                     armature.location.x = coord.x
-                    armature.keyframe_insert(data_path="location", frame=frame * frame_distance, index=0)
+                    armature.keyframe_insert(data_path="location", frame=(frame + start_frame) * frame_distance, index=0)
 
                 if anm_settings.location_y:
                     armature.location.y = coord.y
-                    armature.keyframe_insert(data_path="location", frame=frame * frame_distance, index=1)
+                    armature.keyframe_insert(data_path="location", frame=(frame + start_frame) * frame_distance, index=1)
 
                 if anm_settings.location_z:
                     armature.location.z = coord.z
-                    armature.keyframe_insert(data_path="location", frame=frame * frame_distance, index=2)
+                    armature.keyframe_insert(data_path="location", frame=(frame + start_frame) * frame_distance, index=2)
 
         # disable interpolation, as blender can't interpolate by slerp
         for fcurve in armature.animation_data.action.fcurves:
@@ -220,7 +220,7 @@ class AnmFile:
         bpy.ops.object.mode_set(mode='OBJECT')
     
     @staticmethod
-    def fromObject(obj: bpy.types.Object, align_bones = True, anm_settings: AnimationSettings = AnimationSettings()) -> AnmFile:
+    def fromObject(obj: bpy.types.Object, align_bones = True, anm_settings: AnimationSettings = AnimationSettings(), start_frame = -1, end_frame = -1, frame_time = -1) -> AnmFile:
         """Creates an animation from an object
         
         Parameters
@@ -244,14 +244,16 @@ class AnmFile:
             action = obj.animation_data.action
 
             curr_frame = bpy.context.scene.frame_current
-            start_frame = bpy.context.scene.frame_start
-            end_frame = bpy.context.scene.frame_end
+            if start_frame == -1:
+                start_frame = bpy.context.scene.frame_start
+            if end_frame == -1:
+                end_frame = bpy.context.scene.frame_end
             bone_count = sum(1 for pose_bone in obj.pose.bones if not TEMP_BONE in pose_bone.bone)
             
             for f in range(start_frame, end_frame + 1):
                 bpy.context.scene.frame_set(f)
                 frame_id = f - start_frame
-                logger.info('Creating animation frame %d', frame_id)
+                logger.debug('Creating animation frame %d (%s)', frame_id, f)
                 
                 movement = Vector(obj.matrix_world @ obj.pose.bones[find_bone_by_tag(armature.bones, 0).name].head)
 
@@ -288,9 +290,55 @@ class AnmFile:
                         bone_rotations[frame_id][bone_tag] = Vector(matrix.to_quaternion().to_euler('XYZ'))
 
             scene.frame_current = curr_frame
-            frame_time = round(1000 * scene.render.fps_base / scene.render.fps)
+            if frame_time == -1:
+                frame_time = round(1000 * scene.render.fps_base / scene.render.fps)
 
             return AnmFile(bone_count, frame_time, movements, bone_rotations, action.name)
         finally:
             if align_bones:
                 AnmFile.__cleanup_aligned_bones(obj)
+
+    batch_data = []
+
+    @classmethod
+    def hasBatch(cls):
+        return len(cls.batch_data) > 0
+
+    @classmethod
+    def createBatch(cls, animations: list[AnmFile], obj: bpy.types.Object):
+        armature: bpy.types.Armature = obj
+
+        if armature.animation_data == None:
+            armature.animation_data_create()
+        
+        action = bpy.data.actions.new(name = 'animation_batch')
+        armature.animation_data.action = action
+        
+        cls.batch_data = animations
+
+        start_frame = 0
+        for animation in animations:
+            animation.create(obj, use_old_action=True, start_frame=start_frame)
+            start_frame += len(animation.movements)
+
+    @classmethod
+    def reapply_batch(cls, obj: bpy.types.Object, anm_settings: AnimationSettings = AnimationSettings()):
+        if not cls.hasBatch():
+            raise Exception("Batch animation data is missing")
+
+        start_frame = 0
+        for animation in cls.batch_data:
+            animation.create(obj, use_old_action=True, start_frame=start_frame, anm_settings=anm_settings)
+            start_frame += len(animation.movements)
+
+    @classmethod
+    def saveBatch(cls, obj: bpy.types.Object, directory: str):
+        armature: bpy.types.Armature = obj
+        
+        start_frame = 0
+        for old_animation in cls.batch_data:
+            frame_count = len(old_animation.movements)
+            logger.info('Saving batched animation %s from frame %d to %d', old_animation.name, start_frame, start_frame + frame_count - 1)
+            animation = cls.fromObject(obj, start_frame=start_frame, end_frame=start_frame + frame_count - 1, frame_time=old_animation.frame_time)
+            animation.write(directory + "/" + old_animation.name + ".anm")
+            start_frame += frame_count
