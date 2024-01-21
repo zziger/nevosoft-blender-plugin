@@ -210,8 +210,6 @@ class SklNs:
                 for _ in range(numVerts):
                     self.meta.vertices.append(Vector(struct.unpack('fff', file.read(3 * 4))))
 
-                print(self.meta.vertices)
-
 class SklFile:
     bones: list[SklBone]
     vertLinks: list[SklVertexLink]
@@ -301,7 +299,10 @@ class SklFile:
         if scn == None:
             raise Exception("No scene to import to!")
         
+        z_offset = 0
+
         if skl_settings.load_at_0z:
+            z_offset = -self.bones[0].pos.z
             self.bones[0].pos = Vector((0, 0, 0))
 
         # creating material
@@ -330,7 +331,7 @@ class SklFile:
             linkedVert.xyz = Vector((0, 0, 0))
 
             if self.meta.vertices != None:
-                linkedVert.xyz = self.meta.vertices[i]
+                linkedVert.xyz = self.meta.vertices[i] + Vector((0, 0, z_offset))
             else:
                 for link in vertLink.links:
                     bone = self.bones[link.indx]
